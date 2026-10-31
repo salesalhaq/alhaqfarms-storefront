@@ -1,0 +1,106 @@
+# Storefront
+
+Production-quality online storefront for the POS/ERP app with ultra-modern glass UI effects.
+
+The storefront represents **Al Haq Farms & Meats**. Its brand identity and
+public contact details are maintained in `lib/brand.ts` from
+[alhaqfarms.com.pk](https://www.alhaqfarms.com.pk); no public Supabase brand
+settings view is required.
+
+## Tech Stack
+
+- **Next.js 15** (App Router)
+- **React 18**
+- **TypeScript** (strict mode)
+- **Tailwind CSS**
+- **Framer Motion** (animations)
+- **Lucide React** (icons)
+- **Zod** (validation)
+- **Supabase** (database & auth)
+- **@opennextjs/cloudflare** (Cloudflare Workers adapter)
+- **wrangler** (Cloudflare CLI)
+
+## Deployment
+
+Target: **Cloudflare Workers** (start with `shop.alhaqfarms.com.pk`, move to `alhaqfarms.com.pk` after testing)
+
+### Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start local dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview with Cloudflare adapter
+npm run preview
+
+# Deploy to Cloudflare
+npm run deploy
+```
+
+### Environment Variables
+
+Copy `.env.local.example` to `.env.local` for local development. Set the public Supabase URL, anon key, and final `NEXT_PUBLIC_SITE_URL` in the build environment as well. Keep the service-role key, Turnstile secret, and checkout hash secret server-side only.
+
+Sample catalog data is used only when public Supabase credentials are absent or, in development only, when the storefront schema/views are not installed or exposed. Production stays strict and does not silently substitute sample inventory. Secure checkout and order tracking also require the service-role key and a random `CHECKOUT_HASH_SECRET` of at least 32 characters; checkout additionally requires Turnstile site/secret keys.
+
+### Cloudflare Workers Setup
+
+1. Provide `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `NEXT_PUBLIC_SITE_URL` as build-time variables and as plaintext Worker variables (the server runtime also reads the URL).
+2. Configure server-only Cloudflare secrets:
+   ```bash
+   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+   wrangler secret put TURNSTILE_SECRET_KEY
+   wrangler secret put CHECKOUT_HASH_SECRET
+   ```
+   Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` as a public Worker variable.
+3. Preview/deploy only after the owner has reviewed and applied the required Supabase proposals:
+   ```bash
+   npm run preview
+   ```
+
+Configuration files:
+- `wrangler.jsonc` - Worker configuration (name: `alhaqfarms-storefront`)
+- `open-next.config.ts` - OpenNext adapter configuration
+
+## Current Status
+
+The storefront includes the catalog, cart, checkout flow, WhatsApp contact handoff,
+order confirmation, order tracking endpoint/UI, policy pages, SEO routes, and an
+installable-app manifest. Production use is still blocked on owner-controlled
+Supabase configuration and review:
+
+- The SQL in `supabase-proposed/` has not been applied.
+- Review the shared `public.web_orders` changes against the desktop app, then expose
+  the `storefront` schema in Supabase Project Settings → API after applying the
+  approved migrations.
+- Configure storefront delivery areas, COD rules, payment accounts, private
+  receipt storage, Supabase credentials, Cloudflare Turnstile, and server-only
+  secrets before accepting real orders.
+- Set `NEXT_PUBLIC_SITE_URL` to the final storefront origin before deployment.
+- The policy copy is draft text and needs owner/legal review.
+- Urdu/RTL content has not been implemented.
+- No production build or deployment has been run.
+
+## Proposed SQL Files
+
+Review `supabase-proposed/README.md` before applying any SQL. For checkout and tracking, review and apply `002`–`008` in order. These files are proposals only and have not been applied:
+
+The owner must configure branch delivery areas, COD rules, and payment accounts before those options become available. Storefront reservations do not lock stock against simultaneous desktop POS sales; enforcing shared reservations requires a desktop-app change and is intentionally out of scope.
+
+See `supabase-proposed/README.md` for details.
+
+## Shared Supabase architecture
+
+The storefront shares the desktop app's Supabase project and live catalog.
+Its settings, safe catalog views, rate-limit data, and RPCs are isolated in the
+`storefront` schema; `public.web_orders` remains shared so the desktop app can
+process website orders. Configure `storefront` under Supabase API → Exposed
+schemas after applying approved SQL. This schema boundary reduces cross-app
+schema and permission conflicts, but it does not isolate a project-wide outage
+or resource exhaustion. The storefront must never run migrations automatically.
