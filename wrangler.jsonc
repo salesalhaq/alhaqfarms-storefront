@@ -4,6 +4,12 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-11-01",
   "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    {
+      "pattern": "shop.alhaqfarms.com.pk",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -15,7 +21,9 @@
     }
   ],
   "vars": {
-
+    "NEXT_PUBLIC_SITE_URL": "https://shop.alhaqfarms.com.pk",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://osrzfwdeyznfvduizmgs.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcnpmd2RleXpuZnZkdWl6bWdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMDA5NDksImV4cCI6MjEwODY3Njk0OX0.O8CHBKOBKRMEC6NRrBtotK-yexAV6NMR18qoRLPS84Q",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAFueLrcxzjhxC316"
   }
-
 }
