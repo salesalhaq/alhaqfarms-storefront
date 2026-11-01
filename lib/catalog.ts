@@ -308,9 +308,43 @@ function getSampleCatalogSnapshot(requestedBranchId?: string): CatalogSnapshot {
 function isMissingStorefrontView(error: { code?: string; message: string }): boolean {
   const message = error.message.toLowerCase();
   return (
-    (error.code === "PGRST205" && message.includes("storefront_branches_view")) ||
+    (error.code === "PGRST205" && message.includes("storefront_")) ||
     (error.code === "PGRST106" && message.includes("storefront"))
   );
+}
+
+function mapCategories(rows: CategoryRow[]): Category[] {
+  return rows.map((category) => ({
+    id: category.id,
+    name: category.name,
+    description: category.description,
+  }));
+}
+
+export async function getStorefrontCategories(): Promise<Category[]> {
+  if (!isSupabaseConfigured) return SAMPLE_CATEGORIES;
+
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Supabase is configured but its client is unavailable.");
+
+  const categoryResult = await supabase
+    .schema("storefront")
+    .from("storefront_categories_view")
+    .select("id,name,description")
+    .order("sort_order")
+    .order("name");
+
+  if (categoryResult.error) {
+    if (isMissingStorefrontView(categoryResult.error) && process.env.NODE_ENV === "development") {
+      console.warn(
+        "Supabase storefront views are not installed; using sample categories for local development."
+      );
+      return SAMPLE_CATEGORIES;
+    }
+    throw new Error(`Could not load storefront categories: ${categoryResult.error.message}`);
+  }
+
+  return mapCategories(categoryResult.data as CategoryRow[]);
 }
 
 function configuredProduct(row: ProductCatalogRow, stockMilli: number | null): Product {
@@ -390,11 +424,7 @@ export async function getCatalogSnapshot(requestedBranchId?: string): Promise<Ca
     phone: branch.phone,
     isDefault: branch.is_default,
   }));
-  const categories: Category[] = (categoryResult.data as CategoryRow[]).map((category) => ({
-    id: category.id,
-    name: category.name,
-    description: category.description,
-  }));
+  const categories = mapCategories(categoryResult.data as CategoryRow[]);
   const branchId =
     branches.find((branch) => branch.id === requestedBranchId)?.id ??
     branches.find((branch) => branch.isDefault)?.id ??
