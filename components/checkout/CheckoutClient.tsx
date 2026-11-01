@@ -184,6 +184,23 @@ export function CheckoutClient({
   const deliverySetting = deliverySettings.find((setting) => setting.branch_id === branchId);
   const codSetting = codSettings.find((setting) => setting.branch_id === branchId);
   const deliveryCities = deliverySetting?.allowed_cities ?? EMPTY_CITIES;
+  const estimatedSubtotalPaisa = items.reduce(
+    (total, item) =>
+      total + Math.round((item.pricePaisa * item.quantityMilli) / 1000),
+    0
+  );
+  const estimatedDeliveryChargePaisa =
+    fulfillmentType === "pickup"
+      ? 0
+      : deliverySetting && city && deliveryCities.includes(city)
+        ? estimatedSubtotalPaisa >= deliverySetting.free_delivery_threshold_paisa
+          ? 0
+          : deliverySetting.delivery_charge_paisa
+        : null;
+  const estimatedTotalPaisa =
+    estimatedDeliveryChargePaisa === null
+      ? null
+      : estimatedSubtotalPaisa + estimatedDeliveryChargePaisa;
   const transferAccounts = paymentAccounts.filter(
     (account) => account.payment_method === "easypaisa" || account.payment_method === "jazzcash"
   );
@@ -701,6 +718,9 @@ export function CheckoutClient({
             <div className="mt-5 space-y-4">
               {items.map((item) => {
                 const serverLine = quote?.items.find((line) => line.productId === item.productId);
+                const lineTotalPaisa =
+                  serverLine?.lineTotalPaisa ??
+                  Math.round((item.pricePaisa * item.quantityMilli) / 1000);
                 return (
                   <div key={item.productId} className="flex items-start gap-3">
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-line/10">
@@ -710,19 +730,19 @@ export function CheckoutClient({
                       <p className="line-clamp-1 text-sm font-medium text-ink">{item.name}</p>
                       <p className="mt-1 text-xs text-muted">{formatQuantity(item.quantityMilli, item.unitCode)}</p>
                     </div>
-                    <span className="text-sm font-medium text-ink">{serverLine ? formatPaisa(serverLine.lineTotalPaisa) : "—"}</span>
+                    <span className="text-sm font-medium text-ink">{formatPaisa(lineTotalPaisa)}</span>
                   </div>
                 );
               })}
             </div>
             <div className="mt-6 space-y-3 border-t border-line/10 pt-5 text-sm">
               {quoteLoading && <p className="flex items-center gap-2 text-xs text-muted"><LoaderCircle size={14} className="animate-spin" />Updating secure quote…</p>}
-              <div className="flex justify-between text-muted"><span>Subtotal</span><span>{quote ? formatPaisa(quote.subtotalPaisa) : "—"}</span></div>
-              <div className="flex justify-between text-muted"><span>Tax included</span><span>{quote ? formatPaisa(quote.taxPaisa) : "—"}</span></div>
-              <div className="flex justify-between text-muted"><span>Delivery</span><span>{quote ? (quote.deliveryChargePaisa ? formatPaisa(quote.deliveryChargePaisa) : "Free / pickup") : "—"}</span></div>
-              <div className="flex justify-between border-t border-line/10 pt-3 text-base font-semibold text-ink"><span>Total</span><span>{quote ? formatPaisa(quote.totalPaisa) : "—"}</span></div>
+              <div className="flex justify-between text-muted"><span>{quote ? "Subtotal" : "Estimated subtotal"}</span><span>{formatPaisa(quote?.subtotalPaisa ?? estimatedSubtotalPaisa)}</span></div>
+              <div className="flex justify-between text-muted"><span>Tax included</span><span>{quote ? formatPaisa(quote.taxPaisa) : "Included"}</span></div>
+              <div className="flex justify-between text-muted"><span>Delivery</span><span>{quote ? (quote.deliveryChargePaisa ? formatPaisa(quote.deliveryChargePaisa) : "Free / pickup") : estimatedDeliveryChargePaisa === null ? "Select a city" : estimatedDeliveryChargePaisa ? formatPaisa(estimatedDeliveryChargePaisa) : "Free / pickup"}</span></div>
+              <div className="flex justify-between border-t border-line/10 pt-3 text-base font-semibold text-ink"><span>{quote ? "Total" : "Estimated total"}</span><span>{quote ? formatPaisa(quote.totalPaisa) : estimatedTotalPaisa === null ? "Select a city" : formatPaisa(estimatedTotalPaisa)}</span></div>
             </div>
-            <p className="mt-5 text-xs leading-relaxed text-muted">The server recalculates prices and stock when your order is submitted. The displayed quote may change if products or delivery options change.</p>
+            <p className="mt-5 text-xs leading-relaxed text-muted">{quote ? "The server recalculates prices and stock when your order is submitted. The displayed quote may change if products or delivery options change." : "These amounts use the prices saved in your cart and are estimates until the server confirms the order."}</p>
           </GlassCard>
         </aside>
       </div>
