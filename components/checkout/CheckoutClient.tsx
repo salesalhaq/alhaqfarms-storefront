@@ -76,11 +76,11 @@ const FIELD =
 const LABEL = "mb-2 block text-xs font-medium text-muted";
 const STEPS = ["Branch", "Contact", "Payment", "Transfer", "Review"];
 
-function isAllowedCity(cities: string[] | null, city: string): boolean {
-  return Boolean(city) &&
-    (cities === null ||
-      cities.length === 0 ||
-      cities.some((allowed) => allowed.trim().toLowerCase() === city.trim().toLowerCase()));
+function isAllowedArea(areas: string[] | null, area: string): boolean {
+  return Boolean(area) &&
+    (areas === null ||
+      areas.length === 0 ||
+      areas.some((allowed) => allowed.trim().toLowerCase() === area.trim().toLowerCase()));
 }
 
 function compressReceipt(file: File): Promise<File> {
@@ -152,7 +152,7 @@ export function CheckoutClient({
   const [step, setStep] = useState(1);
   const [branchId, setBranchId] = useState(defaultBranchId);
   const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery");
-  const [city, setCity] = useState("");
+  const [deliveryArea, setDeliveryArea] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -183,7 +183,7 @@ export function CheckoutClient({
   const currentBranch = branches.find((branch) => branch.id === branchId);
   const deliverySetting = deliverySettings.find((setting) => setting.branch_id === branchId);
   const codSetting = codSettings.find((setting) => setting.branch_id === branchId);
-  const deliveryCities = deliverySetting?.allowed_cities ?? EMPTY_CITIES;
+  const deliveryAreas = deliverySetting?.allowed_cities ?? EMPTY_CITIES;
   const estimatedSubtotalPaisa = items.reduce(
     (total, item) =>
       total + Math.round((item.pricePaisa * item.quantityMilli) / 1000),
@@ -192,7 +192,7 @@ export function CheckoutClient({
   const estimatedDeliveryChargePaisa =
     fulfillmentType === "pickup"
       ? 0
-      : deliverySetting && city && deliveryCities.includes(city)
+      : deliverySetting && deliveryArea && deliveryAreas.includes(deliveryArea)
         ? estimatedSubtotalPaisa >= deliverySetting.free_delivery_threshold_paisa
           ? 0
           : deliverySetting.delivery_charge_paisa
@@ -218,7 +218,7 @@ export function CheckoutClient({
       codSetting &&
       quote &&
       quote.totalPaisa > 0 &&
-      isAllowedCity(codSetting.allowed_cities, city) &&
+      isAllowedArea(codSetting.allowed_cities, deliveryArea) &&
       (codSetting.max_order_amount_paisa === null ||
         quote.totalPaisa <= codSetting.max_order_amount_paisa)
   );
@@ -254,10 +254,10 @@ export function CheckoutClient({
     }>;
     if (
       fulfillmentType === "delivery" &&
-      (!deliverySetting || !city || !deliveryCities.includes(city))
+      (!deliverySetting || !deliveryArea || !deliveryAreas.includes(deliveryArea))
     ) {
       setQuote(null);
-      setQuoteError("Choose a delivery city served by this branch.");
+      setQuoteError("Choose a delivery area served by this branch.");
       setQuoteLoading(false);
       return;
     }
@@ -272,7 +272,7 @@ export function CheckoutClient({
       body: JSON.stringify({
         branchId,
         fulfillmentType,
-        city: fulfillmentType === "delivery" ? city : null,
+        city: fulfillmentType === "delivery" ? deliveryArea : null,
         items: requestItems,
       }),
       signal: controller.signal,
@@ -293,8 +293,8 @@ export function CheckoutClient({
     return () => controller.abort();
   }, [
     branchId,
-    city,
-    deliveryCities,
+    deliveryArea,
+    deliveryAreas,
     deliverySetting,
     fulfillmentType,
     isBackendConfigured,
@@ -317,9 +317,9 @@ export function CheckoutClient({
       }
       if (
         fulfillmentType === "delivery" &&
-        (!deliverySetting || !city || !deliveryCities.includes(city))
+        (!deliverySetting || !deliveryArea || !deliveryAreas.includes(deliveryArea))
       ) {
-        setError("Choose a delivery city served by this branch, or select pickup.");
+        setError("Choose a delivery area served by this branch, or select pickup.");
         return false;
       }
       if (fulfillmentType === "delivery" && address.trim().length < 5) {
@@ -343,7 +343,7 @@ export function CheckoutClient({
         return false;
       }
       if (paymentMethod === "cash_on_delivery" && !codAvailable) {
-        setError("Cash on delivery is not available for this city or order total.");
+        setError("Cash on delivery is not available for this area or order total.");
         return false;
       }
     }
@@ -385,7 +385,7 @@ export function CheckoutClient({
     if (
       !currentBranch ||
       (fulfillmentType === "delivery" &&
-        (!deliverySetting || !city || !deliveryCities.includes(city) || address.trim().length < 5)) ||
+        (!deliverySetting || !deliveryArea || !deliveryAreas.includes(deliveryArea) || address.trim().length < 5)) ||
       customerName.trim().length < 2 ||
       !phoneIsValid ||
       !paymentMethod ||
@@ -416,7 +416,7 @@ export function CheckoutClient({
     formData.set("idempotencyKey", idempotencyKey);
     formData.set("branchId", branchId);
     formData.set("fulfillmentType", fulfillmentType);
-    formData.set("city", fulfillmentType === "delivery" ? city : "");
+    formData.set("city", fulfillmentType === "delivery" ? deliveryArea : "");
     formData.set("customerName", customerName.trim());
     formData.set("customerPhone", customerPhone);
     formData.set("deliveryAddress", fulfillmentType === "delivery" ? address.trim() : "");
@@ -520,7 +520,7 @@ export function CheckoutClient({
                     <label className={LABEL} htmlFor="checkout-branch">Pickup or dispatch branch</label>
                     <select id="checkout-branch" className={FIELD} value={branchId} onChange={(event) => {
                       setBranchId(event.target.value);
-                      setCity("");
+                      setDeliveryArea("");
                     }}>
                       <option value="">Choose a branch</option>
                       {branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
@@ -542,10 +542,10 @@ export function CheckoutClient({
                   {fulfillmentType === "delivery" && (
                     <>
                       <div>
-                        <label className={LABEL} htmlFor="checkout-city">Delivery city</label>
-                        <select id="checkout-city" className={FIELD} value={city} onChange={(event) => setCity(event.target.value)} disabled={!deliveryCities.length}>
-                          <option value="">{deliveryCities.length ? "Choose a served city" : "Delivery is not configured for this branch"}</option>
-                          {deliveryCities.map((name) => <option key={name} value={name}>{name}</option>)}
+                        <label className={LABEL} htmlFor="checkout-area">Delivery area</label>
+                        <select id="checkout-area" className={FIELD} value={deliveryArea} onChange={(event) => setDeliveryArea(event.target.value)} disabled={!deliveryAreas.length}>
+                          <option value="">{deliveryAreas.length ? "Choose a delivery area" : "No delivery areas are configured for this branch"}</option>
+                          {deliveryAreas.map((name) => <option key={name} value={name}>{name}</option>)}
                         </select>
                       </div>
                       <div>
@@ -609,7 +609,7 @@ export function CheckoutClient({
                         <span className="block font-medium text-ink">Cash on delivery</span>
                         <span className="mt-1 block text-xs text-muted">
                           {quote && codSetting.max_order_amount_paisa !== null
-                            ? `Limit ${formatPaisa(codSetting.max_order_amount_paisa)}; final availability depends on your city and total.`
+                            ? `Limit ${formatPaisa(codSetting.max_order_amount_paisa)}; final availability depends on your area and total.`
                             : "Available only for eligible delivery areas and order totals."}
                         </span>
                       </span>
@@ -620,7 +620,7 @@ export function CheckoutClient({
                   )}
                 </div>
                 {paymentMethod === "cash_on_delivery" && quote && !codAvailable && (
-                  <p className="mt-3 text-sm text-amber-200">COD is not available for the selected city or order total.</p>
+                  <p className="mt-3 text-sm text-amber-200">COD is not available for the selected area or order total.</p>
                 )}
               </section>
             )}
@@ -673,7 +673,7 @@ export function CheckoutClient({
                 <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
                   <div><dt className="text-muted">Branch</dt><dd className="mt-1 font-medium text-ink">{currentBranch?.name}</dd></div>
                   <div><dt className="text-muted">Fulfillment</dt><dd className="mt-1 font-medium capitalize text-ink">{fulfillmentType}</dd></div>
-                  {fulfillmentType === "delivery" && <div><dt className="text-muted">City</dt><dd className="mt-1 font-medium text-ink">{city}</dd></div>}
+                  {fulfillmentType === "delivery" && <div><dt className="text-muted">Delivery area</dt><dd className="mt-1 font-medium text-ink">{deliveryArea}</dd></div>}
                   <div><dt className="text-muted">Customer</dt><dd className="mt-1 font-medium text-ink">{customerName} · {normalizePakistanPhone(customerPhone)}</dd></div>
                   <div><dt className="text-muted">Payment</dt><dd className="mt-1 font-medium capitalize text-ink">{paymentMethod.replace(/_/g, " ")}</dd></div>
                   {fulfillmentType === "delivery" && <div className="sm:col-span-2"><dt className="text-muted">Address</dt><dd className="mt-1 font-medium text-ink">{address}</dd></div>}
@@ -739,8 +739,8 @@ export function CheckoutClient({
               {quoteLoading && <p className="flex items-center gap-2 text-xs text-muted"><LoaderCircle size={14} className="animate-spin" />Updating secure quote…</p>}
               <div className="flex justify-between text-muted"><span>{quote ? "Subtotal" : "Estimated subtotal"}</span><span>{formatPaisa(quote?.subtotalPaisa ?? estimatedSubtotalPaisa)}</span></div>
               <div className="flex justify-between text-muted"><span>Tax included</span><span>{quote ? formatPaisa(quote.taxPaisa) : "Included"}</span></div>
-              <div className="flex justify-between text-muted"><span>Delivery</span><span>{quote ? (quote.deliveryChargePaisa ? formatPaisa(quote.deliveryChargePaisa) : "Free / pickup") : estimatedDeliveryChargePaisa === null ? "Select a city" : estimatedDeliveryChargePaisa ? formatPaisa(estimatedDeliveryChargePaisa) : "Free / pickup"}</span></div>
-              <div className="flex justify-between border-t border-line/10 pt-3 text-base font-semibold text-ink"><span>{quote ? "Total" : "Estimated total"}</span><span>{quote ? formatPaisa(quote.totalPaisa) : estimatedTotalPaisa === null ? "Select a city" : formatPaisa(estimatedTotalPaisa)}</span></div>
+              <div className="flex justify-between text-muted"><span>Delivery</span><span>{quote ? (quote.deliveryChargePaisa ? formatPaisa(quote.deliveryChargePaisa) : "Free / pickup") : estimatedDeliveryChargePaisa === null ? "Select an area" : estimatedDeliveryChargePaisa ? formatPaisa(estimatedDeliveryChargePaisa) : "Free / pickup"}</span></div>
+              <div className="flex justify-between border-t border-line/10 pt-3 text-base font-semibold text-ink"><span>{quote ? "Total" : "Estimated total"}</span><span>{quote ? formatPaisa(quote.totalPaisa) : estimatedTotalPaisa === null ? "Select an area" : formatPaisa(estimatedTotalPaisa)}</span></div>
             </div>
             <p className="mt-5 text-xs leading-relaxed text-muted">{quote ? "The server recalculates prices and stock when your order is submitted. The displayed quote may change if products or delivery options change." : "These amounts use the prices saved in your cart and are estimates until the server confirms the order."}</p>
           </GlassCard>

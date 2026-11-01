@@ -59,7 +59,7 @@ Sample catalog data is used only when public Supabase credentials are absent or,
    wrangler secret put CHECKOUT_HASH_SECRET
    ```
    Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` as a public Worker variable.
-3. Preview/deploy only after the owner has reviewed and applied the required Supabase proposals:
+3. Preview/deploy only after the owner has applied the implemented Supabase migrations:
    ```bash
    npm run preview
    ```
@@ -75,10 +75,10 @@ order confirmation, order tracking endpoint/UI, policy pages, SEO routes, and an
 installable-app manifest. Production use is still blocked on owner-controlled
 Supabase configuration and review:
 
-- The SQL in `supabase-proposed/` has not been applied.
-- Review the shared `public.web_orders` changes against the desktop app, then expose
-  the `storefront` schema in Supabase Project Settings → API after applying the
-  approved migrations.
+- Storefront migrations `002`–`008` are implemented in `supabase/migrations/`.
+  Apply them to the shared Supabase project, review the shared
+  `public.web_orders` changes against the desktop app, then expose the
+  `storefront` schema in Supabase Project Settings → API.
 - Configure storefront delivery areas, COD rules, payment accounts, private
   receipt storage, Supabase credentials, Cloudflare Turnstile, and server-only
   secrets before accepting real orders.
@@ -87,20 +87,31 @@ Supabase configuration and review:
 - Urdu/RTL content has not been implemented.
 - No production build or deployment has been run.
 
-## Proposed SQL Files
+## Implemented Supabase Migrations
 
-Review `supabase-proposed/README.md` before applying any SQL. For checkout and tracking, review and apply `002`–`008` in order. These files are proposals only and have not been applied:
+The checkout and tracking migrations are implemented in `supabase/migrations/`.
+Review them against the live schema and apply `002`–`008` in order before using
+online checkout:
 
 Customer wishlists and account order history additionally require the tracked
 [`supabase/migrations/202611010001_customer_wishlist_order_history.sql`](./supabase/migrations/202611010001_customer_wishlist_order_history.sql)
-migration after proposals `002`–`008` have been reviewed and applied. It creates
+migration after `002`–`008` have been applied. It creates
 a private per-user wishlist and associates only newly placed, signed-in
 storefront orders with their Supabase Auth user. Existing guest orders and the
 desktop app's receivables customer records are not automatically linked.
 
-The owner must configure branch delivery areas, COD rules, and payment accounts before those options become available. Storefront reservations do not lock stock against simultaneous desktop POS sales; enforcing shared reservations requires a desktop-app change and is intentionally out of scope.
+The tracked
+[`supabase/migrations/202611010002_branch_delivery_areas.sql`](./supabase/migrations/202611010002_branch_delivery_areas.sql)
+migration creates branch-linked delivery-area records using the shared
+`public.branches.id` UUID, backfills existing area names, and keeps checkout's
+existing settings view compatible. Apply it after `002`–`008` and
+`202611010001_customer_wishlist_order_history.sql`. The owner must configure
+branch delivery areas, COD rules, and payment accounts before those options
+become available. Storefront reservations do not lock stock against
+simultaneous desktop POS sales; enforcing shared reservations requires a
+desktop-app change and is intentionally out of scope.
 
-See `supabase-proposed/README.md` for details.
+See [`supabase/README.md`](./supabase/README.md) for migration details.
 
 ## Shared Supabase architecture
 
