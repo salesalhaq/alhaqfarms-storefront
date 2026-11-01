@@ -44,10 +44,7 @@ export function generateMetadata(): Metadata {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#21191a" },
-    { media: "(prefers-color-scheme: light)", color: "#faf7f3" },
-  ],
+  themeColor: "#0B0809",
 };
 
 export default function RootLayout({
@@ -66,7 +63,7 @@ export default function RootLayout({
           <CartProvider>
             <AuroraBackground />
             <Navbar brand={BRAND_SETTINGS} />
-            <div className="pt-32">{children}</div>
+            <div className="pt-28 sm:pt-32">{children}</div>
             <Footer brand={BRAND_SETTINGS} />
           </CartProvider>
         </ThemeProvider>

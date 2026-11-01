@@ -18,8 +18,16 @@ export const content = {
       secondaryCta: "Our Products",
       trackCta: "Track Order",
       contactCta: "Contact Us",
+      whatsappCta: "Order on WhatsApp",
+      priceListCta: "View Full Price List",
       chips: ["Fresh daily", "100% Halal", "Same-day delivery"],
     },
+    stats: [
+      { value: 100, suffix: "%", decimals: 0, label: "Halal certified" },
+      { value: 12, suffix: "k+", decimals: 0, label: "Orders delivered" },
+      { value: 4.9, suffix: "/5", decimals: 1, label: "Customer rating" },
+      { value: 24, suffix: "h", decimals: 0, label: "Same-day dispatch" },
+    ],
     categories: {
       heading: "Shop by Category",
       subtext:
@@ -148,6 +156,10 @@ export const content = {
       loadMore: "Load more",
       clearFilters: "Clear filters",
       browse: "Browse",
+      meatType: "Meat type",
+      allProducts: "All products",
+      filterByCategory: "Filter by category",
+      showingResults: "Showing {count} products",
     },
     sortOptions: {
       featured: "Featured",
@@ -200,6 +212,12 @@ export const content = {
       { href: "/privacy", label: "Privacy" },
       { href: "/terms", label: "Terms" },
       { href: "/contact", label: "Contact" },
+    ],
+    findUsHeading: "Find us",
+    social: [
+      { href: "https://wa.me/923333867073", label: "WhatsApp" },
+      { href: "https://www.facebook.com", label: "Facebook" },
+      { href: "https://www.instagram.com", label: "Instagram" },
     ],
     copyright: "© Al Haq Farms & Meats. All Rights Reserved.",
   },

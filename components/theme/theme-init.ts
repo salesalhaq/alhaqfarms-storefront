@@ -5,13 +5,11 @@
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var d=document.documentElement;
-var mode=localStorage.getItem('sf:mode')||'light';
 var glass=localStorage.getItem('sf:glass')||'garnet';
 var effects=localStorage.getItem('sf:effects')||'auto';
 var themes=['garnet','emerald','ocean','midnight','sunset'];
 if(themes.indexOf(glass)===-1){glass='garnet';}
-var dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-d.setAttribute('data-mode',mode==='system'?(dark?'dark':'light'):mode);
+d.setAttribute('data-mode','dark');
 d.setAttribute('data-glass',glass);
 var low=false;
 if(effects==='low'){low=true;}

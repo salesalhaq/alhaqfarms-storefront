@@ -9,7 +9,7 @@ import { formatPaisa, formatQuantity } from "@/lib/utils";
 import { trackOrderResultSchema, type TrackedOrder } from "@/lib/tracking-validation";
 
 const FIELD =
-  "glass-line w-full rounded-full px-4 py-3 text-sm text-ink placeholder:text-muted focus:outline-none";
+  "glass-line w-full rounded-full px-4 py-3 text-sm text-ink placeholder:text-muted transition-colors focus:border-accent2/60 focus-visible:outline-none";
 
 function readableStatus(value: string): string {
   return value

@@ -1,17 +1,11 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Monitor, Moon, Palette, Sun, Wand2 } from "lucide-react";
+import { Palette, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GLASS_THEMES } from "@/lib/brand";
 import { buttonStyles } from "@/components/ui/GlassButton";
-import { useTheme, type ColorMode, type EffectsMode } from "@/components/theme/ThemeProvider";
-
-const MODES: ReadonlyArray<{ id: ColorMode; label: string; Icon: typeof Sun }> = [
-  { id: "light", label: "Light", Icon: Sun },
-  { id: "dark", label: "Dark", Icon: Moon },
-  { id: "system", label: "System", Icon: Monitor },
-];
+import { useTheme, type EffectsMode } from "@/components/theme/ThemeProvider";
 
 const EFFECTS: ReadonlyArray<{ id: EffectsMode; label: string }> = [
   { id: "auto", label: "Auto" },
@@ -20,7 +14,7 @@ const EFFECTS: ReadonlyArray<{ id: EffectsMode; label: string }> = [
 ];
 
 export function ThemeMenu() {
-  const { mode, glass, effects, setMode, setGlass, setEffects, mounted } = useTheme();
+  const { glass, effects, setGlass, setEffects, mounted } = useTheme();
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -61,37 +55,9 @@ export function ThemeMenu() {
           id={panelId}
           role="dialog"
           aria-label="Appearance settings"
-          className="glass-line absolute right-0 top-12 z-50 w-64 rounded-glass p-4"
+          className="glass-strong absolute right-0 top-12 z-50 w-64 rounded-glass p-4"
         >
           <fieldset>
-            <legend className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted">
-              Mode
-            </legend>
-            <div className="grid grid-cols-3 gap-1.5">
-              {MODES.map(({ id, label, Icon }) => {
-                const active = mounted && mode === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setMode(id)}
-                    aria-pressed={active}
-                    className={cn(
-                      "flex flex-col items-center gap-1 rounded-glass-sm border px-2 py-2 text-[0.6875rem] transition-colors",
-                      active
-                        ? "border-accent/50 bg-accent/15 text-ink"
-                        : "border-line/10 bg-line/[0.04] text-muted hover:text-ink"
-                    )}
-                  >
-                    <Icon size={16} aria-hidden="true" />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <fieldset className="mt-4">
             <legend className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted">
               Glass theme
             </legend>

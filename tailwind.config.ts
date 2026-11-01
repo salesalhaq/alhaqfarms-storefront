@@ -10,14 +10,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        bg: "rgb(var(--canvas) / <alpha-value>)",
+        "bg-elevated": "rgb(var(--surface) / <alpha-value>)",
         canvas: "rgb(var(--canvas) / <alpha-value>)",
         surface: "rgb(var(--surface) / <alpha-value>)",
         ink: "rgb(var(--ink) / <alpha-value>)",
+        text: "rgb(var(--ink) / <alpha-value>)",
         muted: "rgb(var(--muted) / <alpha-value>)",
         line: "rgb(var(--line) / <alpha-value>)",
+        border: "rgb(var(--line) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
         accent2: "rgb(var(--accent2) / <alpha-value>)",
+        primary: "rgb(var(--accent) / <alpha-value>)",
+        "primary-deep": "rgb(var(--primary-deep) / <alpha-value>)",
+        gold: "rgb(var(--accent2) / <alpha-value>)",
+        success: "rgb(var(--success) / <alpha-value>)",
         "on-accent": "rgb(var(--on-accent) / <alpha-value>)",
+      },
+      boxShadow: {
+        glass: "0 8px 32px rgb(0 0 0 / 0.45)",
+        "glass-lift": "0 16px 44px rgb(0 0 0 / 0.5)",
+        "glow-crimson": "0 0 40px rgb(193 18 31 / 0.25)",
       },
       borderRadius: {
         glass: "var(--radius)",
@@ -33,8 +46,7 @@ const config: Config = {
       keyframes: {
         drift: {
           "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
-          "33%": { transform: "translate3d(6vw, -4vh, 0) scale(1.12)" },
-          "66%": { transform: "translate3d(-5vw, 5vh, 0) scale(0.94)" },
+          "100%": { transform: "translate3d(4vw, -3vh, 0) scale(1.1)" },
         },
         shimmer: {
           "100%": { transform: "translateX(100%)" },

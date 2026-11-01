@@ -4,12 +4,13 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
+import { X, ShoppingBag, Trash2, ArrowRight, MessageCircle, ShieldCheck, Truck } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { GlassButton } from "@/components/ui/GlassButton";
+import { GlassButton, buttonStyles } from "@/components/ui/GlassButton";
 import { QuantitySelector } from "@/components/shop/QuantitySelector";
 import { useCart } from "@/lib/store";
-import { formatPaisa } from "@/lib/utils";
+import { formatPaisa, toDecimalQuantity } from "@/lib/utils";
+import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[60] bg-scrim/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
           />
 
           {/* Drawer */}
@@ -53,13 +54,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             className="fixed inset-y-0 right-0 z-[70] w-full max-w-md"
           >
             <GlassCard
+              variant="strong"
               padding="none"
               className="flex h-full flex-col rounded-none border-y-0 border-r-0"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-line/10 p-6">
                 <div className="flex items-center gap-3">
-                  <ShoppingBag size={20} className="text-accent" />
+                  <ShoppingBag size={20} className="text-accent2" />
                   <h2 className="text-lg font-bold text-ink">Your Cart</h2>
                   <span className="chip text-[10px]">
                     {items.length} {items.length === 1 ? "Item" : "Items"}
@@ -77,21 +79,30 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="flex-1 overflow-y-auto p-6">
                 {items.length === 0 ? (
                   <div className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="mb-4 grid h-20 w-20 place-items-center rounded-full bg-line/5 text-muted">
+                    <div className="mb-4 grid h-20 w-20 place-items-center rounded-full bg-white/[0.06] text-muted">
                       <ShoppingBag size={40} />
                     </div>
                     <p className="text-base font-medium text-ink">Your cart is empty</p>
                     <p className="mt-2 text-sm text-muted">
                       Browse our shop to add fresh farm products to your cart.
                     </p>
-                    <GlassButton className="mt-8" onClick={onClose}>
-                      Start Shopping
-                    </GlassButton>
+                    <Link href="/shop" onClick={onClose} className="mt-8">
+                      <GlassButton>Start Shopping</GlassButton>
+                    </Link>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    {items.map((item) => (
-                      <div key={item.productId} className="flex gap-4">
+                  <div className="space-y-4">
+                    <AnimatePresence initial={false}>
+                      {items.map((item) => (
+                        <motion.div
+                          key={item.productId}
+                          layout
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, x: 40, height: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="flex gap-4 overflow-hidden rounded-glass-sm border border-success/15 bg-success/[0.04] p-3"
+                        >
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-glass-sm bg-line/5">
                           {item.imagePath ? (
                             <Image
@@ -133,37 +144,68 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                               }
                               className="h-9 py-0"
                             />
-                            <span className="text-sm font-bold text-ink">
+                            <span className="text-sm font-bold text-accent2">
                               {formatPaisa((item.pricePaisa * item.quantityMilli) / 1000)}
                             </span>
                           </div>
                         </div>
-                      </div>
+                        </motion.div>
                     ))}
+                    </AnimatePresence>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
               {items.length > 0 && (
-                <div className="border-t border-line/10 bg-line/[0.02] p-6 space-y-4">
+                <div className="space-y-4 border-t border-line/10 p-6">
+                  <div className="glass-gold rounded-glass p-3 text-center text-xs font-medium text-accent2">
+                    Free delivery on qualifying orders today
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted">Subtotal</span>
-                    <span className="text-xl font-bold text-ink">
+                    <span className="text-gold-gradient text-2xl font-extrabold">
                       {formatPaisa(subtotalPaisa)}
                     </span>
                   </div>
-                  
-                  <p className="text-[10px] text-muted text-center">
+
+                  <p className="text-center text-[10px] text-muted">
                     Delivery charges and taxes are calculated at checkout.
                   </p>
 
+                  <a
+                    href={whatsappLink(
+                      BRAND_SETTINGS.whatsapp,
+                      `Hi! I would like to order: ${items
+                        .map((item) => `${toDecimalQuantity(item.quantityMilli)} ${item.unitCode} ${item.name}`)
+                        .join(", ")}. Subtotal ${formatPaisa(subtotalPaisa)}.`
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={onClose}
+                    className={buttonStyles("whatsapp", "lg", "w-full")}
+                  >
+                    <MessageCircle size={18} aria-hidden="true" />
+                    Order on WhatsApp
+                  </a>
+
                   <Link href="/checkout" onClick={onClose}>
-                    <GlassButton className="w-full" size="lg">
+                    <GlassButton variant="secondary" className="w-full" size="lg">
                       Checkout
                       <ArrowRight size={18} className="ml-2" />
                     </GlassButton>
                   </Link>
+
+                  <ul className="flex items-center justify-center gap-4 pt-1 text-[11px] text-muted">
+                    <li className="flex items-center gap-1.5">
+                      <Truck size={13} aria-hidden="true" className="text-accent2" />
+                      Fast delivery
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <ShieldCheck size={13} aria-hidden="true" className="text-accent2" />
+                      100% Halal
+                    </li>
+                  </ul>
                 </div>
               )}
             </GlassCard>

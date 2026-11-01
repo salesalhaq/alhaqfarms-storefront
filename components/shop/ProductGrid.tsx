@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { Reveal } from "@/components/ui/Reveal";
 import { Toast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/store";
@@ -49,13 +50,14 @@ export function ProductGrid({
           columnsClassName
         )}
       >
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            labels={labels}
-            onAddToCart={handleAddToCart}
-          />
+        {products.map((product, index) => (
+          <Reveal key={product.id} delay={index * 80} className="h-full">
+            <ProductCard
+              product={product}
+              labels={labels}
+              onAddToCart={handleAddToCart}
+            />
+          </Reveal>
         ))}
       </div>
       <Toast message={notice} onDismiss={() => setNotice(null)} />

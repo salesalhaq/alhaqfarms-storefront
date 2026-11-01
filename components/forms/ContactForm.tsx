@@ -7,9 +7,9 @@ import { content } from "@/content/site";
 import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
 
 const FIELD =
-  "glass-line w-full rounded-full px-4 py-3 text-sm text-ink placeholder:text-muted focus:outline-none";
+  "glass-line w-full rounded-full px-4 py-3 text-sm text-ink placeholder:text-muted transition-colors focus:border-accent2/60 focus-visible:outline-none";
 const AREA =
-  "glass-line w-full rounded-glass px-4 py-3 text-sm text-ink placeholder:text-muted focus:outline-none";
+  "glass-line w-full rounded-glass px-4 py-3 text-sm text-ink placeholder:text-muted transition-colors focus:border-accent2/60 focus-visible:outline-none";
 
 const [NAME, EMAIL, PHONE, SUBJECT, MESSAGE] = content.contact.form.fields;
 

@@ -15,6 +15,7 @@
     }
   ],
   "vars": {
-    "NEXTJS_ENV": "production"
+
   }
+
 }

@@ -3,15 +3,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ShoppingCart, Info } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, ShoppingCart, Info, Snowflake, ShieldCheck, Truck, MessageCircle } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { GlassButton } from "@/components/ui/GlassButton";
+import { GlassBadge } from "@/components/ui/GlassBadge";
+import { buttonStyles } from "@/components/ui/GlassButton";
 import { QuantitySelector } from "./QuantitySelector";
 import { ProductGrid } from "./ProductGrid";
 import { Toast } from "@/components/ui/Toast";
 import { useCart } from "@/lib/store";
 import { formatPaisa, unitLabel, quantityStep, toDecimalQuantity, cn } from "@/lib/utils";
 import { content } from "@/content/site";
+import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
 import type { Product } from "@/lib/types";
 
 interface ProductDetailClientProps {
@@ -30,6 +33,9 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
   };
 
   const soldOut = product.stockMilli !== null && product.stockMilli <= 0;
+  const step = quantityStep(product.unitCode);
+  const weightChips = [1, 2, 5].map((n) => n * step * 1000);
+  const liveTotal = (product.effectivePricePaisa * quantityMilli) / 1000;
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-20">
@@ -49,16 +55,20 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
         <div className="lg:sticky lg:top-32 lg:h-fit">
           <div className="flex flex-col gap-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                {product.categoryName}
-              </p>
-              <h1 className="mt-2 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <GlassBadge tone="crimson">{product.categoryName}</GlassBadge>
+                <GlassBadge tone="gold">
+                  <Snowflake size={12} aria-hidden="true" />
+                  Fresh Cut Daily
+                </GlassBadge>
+              </div>
+              <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">
                 {product.name}
               </h1>
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-ink">
+              <span className="text-gold-gradient text-3xl font-extrabold">
                 {formatPaisa(product.effectivePricePaisa)}
               </span>
               <span className="text-sm text-muted">per {unitLabel(product.unitCode)}</span>
@@ -76,7 +86,26 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
             )}
 
             <GlassCard padding="md" className="space-y-5">
-              <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
+                  Quick select
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {weightChips.map((milli) => (
+                    <button
+                      key={milli}
+                      type="button"
+                      onClick={() => setQuantityMilli(milli)}
+                      data-active={quantityMilli === milli}
+                      className="chip"
+                    >
+                      {toDecimalQuantity(milli)} {product.unitCode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 border-t border-line/10 pt-4">
                 <span className="text-sm font-medium text-ink">Quantity</span>
                 <QuantitySelector
                   unitCode={product.unitCode}
@@ -87,24 +116,30 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
               </div>
 
               <div className="flex items-center justify-between border-t border-line/10 pt-4">
-                <span className="text-sm font-medium text-ink">Subtotal</span>
-                <span className="text-xl font-bold text-ink">
-                  {formatPaisa((product.effectivePricePaisa * quantityMilli) / 1000)}
-                </span>
+                <span className="text-sm font-medium text-ink">Total</span>
+                <motion.span
+                  key={liveTotal}
+                  initial={{ opacity: 0.4, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-2xl font-extrabold text-accent2"
+                >
+                  {formatPaisa(liveTotal)}
+                </motion.span>
               </div>
 
-              <GlassButton
-                className="w-full"
-                size="lg"
+              <button
+                type="button"
                 disabled={soldOut}
                 onClick={handleAddToCart}
+                className={cn(buttonStyles("primary", "lg"), "w-full disabled:opacity-50")}
               >
-                <ShoppingCart size={20} className="mr-2" />
+                <ShoppingCart size={20} aria-hidden="true" />
                 {soldOut ? content.shop.labels.outOfStock : content.shop.labels.addToCart}
-              </GlassButton>
+              </button>
 
-              <div className="flex items-center gap-2 rounded-lg bg-accent/5 p-3 text-xs text-muted">
-                <Info size={14} className="shrink-0 text-accent" />
+              <div className="flex items-center gap-2 rounded-glass bg-white/[0.05] p-3 text-xs text-muted">
+                <Info size={14} className="shrink-0 text-accent2" />
                 <span>
                   {soldOut
                     ? "This item is currently out of stock at your selected branch."
@@ -112,26 +147,62 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                 </span>
               </div>
             </GlassCard>
+
+            <div className="glass-crimson rounded-glass p-5">
+              <p className="text-lg font-bold text-ink">Ready to Order?</p>
+              <p className="mt-1 text-sm text-ink/75">
+                Message us on WhatsApp and we&apos;ll prepare your order for delivery.
+              </p>
+              <a
+                href={whatsappLink(
+                  BRAND_SETTINGS.whatsapp,
+                  `Hi! I'd like to order ${toDecimalQuantity(quantityMilli)} ${product.unitCode} of ${product.name}.`
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-success/45 bg-success/15 px-5 py-2.5 text-sm font-medium text-success backdrop-blur-xl transition-all hover:bg-success/25"
+              >
+                <MessageCircle size={16} aria-hidden="true" />
+                Order on WhatsApp
+              </a>
+            </div>
           </div>
         </div>
 
         {/* Right: Gallery & Scrollytelling */}
         <div className="space-y-12">
           {/* Main Media */}
-          <GlassCard padding="none" className="aspect-square overflow-hidden">
+          <GlassCard padding="none" className="group relative aspect-square overflow-hidden">
             {product.imagePath ? (
               <Image
                 src={product.imagePath}
                 alt={product.name}
                 fill
-                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="photo-treat object-cover transition-transform duration-700 ease-spring group-hover:scale-110"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent/20 via-transparent to-accent2/20">
                 <span className="text-8xl font-bold text-ink/20">{product.name.charAt(0)}</span>
               </div>
             )}
+            <div className="photo-vignette" aria-hidden="true" />
           </GlassCard>
+
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { Icon: Truck, label: "Same-day delivery" },
+              { Icon: Snowflake, label: "Cold-chain packed" },
+              { Icon: ShieldCheck, label: "100% Halal" },
+            ].map((item) => (
+              <GlassCard key={item.label} padding="sm" className="flex flex-col items-center gap-2 text-center">
+                <span className="grid h-10 w-10 place-items-center rounded-full border border-line/15 bg-white/[0.06] text-accent2">
+                  <item.Icon size={18} strokeWidth={1.5} aria-hidden="true" />
+                </span>
+                <span className="text-xs font-medium text-muted">{item.label}</span>
+              </GlassCard>
+            ))}
+          </div>
 
           {/* Scrollytelling Story */}
           <div className="space-y-24 py-12">

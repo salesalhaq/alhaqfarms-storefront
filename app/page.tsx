@@ -6,26 +6,36 @@ import {
   Check,
   Clock,
   Leaf,
+  MessageCircle,
   ShieldCheck,
   Sparkles,
   Truck,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { GlassBadge } from "@/components/ui/GlassBadge";
 import { buttonStyles } from "@/components/ui/GlassButton";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { Counter } from "@/components/ui/Counter";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { SearchBar } from "@/components/shop/SearchBar";
 import { CatalogPreviewNotice } from "@/components/ui/CatalogPreviewNotice";
 import { content } from "@/content/site";
 import { filterAndSort, getCatalogSnapshot } from "@/lib/catalog";
 import { formatPaisa, unitLabel } from "@/lib/utils";
+import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
 import type { CatalogFilters } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 const SERVICE_ICONS = [Leaf, ShieldCheck, Truck];
 const TRUST_ICONS = [ShieldCheck, Truck, Clock];
+const HERO_TRUST = [
+  { Icon: ShieldCheck, label: "100% Halal Certified" },
+  { Icon: Truck, label: "Same-day delivery" },
+  { Icon: Leaf, label: "Farm fresh daily" },
+  { Icon: Clock, label: "Open 9am - 10pm" },
+];
 
 export default async function HomePage() {
   const catalog = await getCatalogSnapshot();
@@ -71,7 +81,7 @@ export default async function HomePage() {
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 1152px"
-                className="object-cover object-center opacity-40"
+                className="animate-ken-burns object-cover object-center opacity-45"
               />
             ) : null}
             <div className={`absolute inset-0 ${
@@ -82,13 +92,13 @@ export default async function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#211719]/70 via-transparent to-white/[0.04]" />
           </div>
           <div className="relative grid w-full items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:px-14">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)] backdrop-blur-xl">
-              <Sparkles size={13} aria-hidden="true" className="text-accent2" />
-              {content.home.hero.saleBanner}
-            </span>
+            <div className="max-w-2xl">
+              <GlassBadge className="border-white/25 bg-white/10 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
+                <Sparkles size={13} aria-hidden="true" className="text-accent2" />
+                {content.home.hero.saleBanner}
+              </GlassBadge>
 
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-5xl font-extrabold leading-[1.03] tracking-tight text-hero-gradient sm:text-6xl lg:text-7xl">
               {content.home.hero.headlineLines.map((line, index) => (
                 <span
                   key={line}
@@ -98,7 +108,7 @@ export default async function HomePage() {
                   <span
                     className={
                       index === content.home.hero.headlineLines.length - 1
-                        ? "text-gold-gradient"
+                        ? "text-crimson-gradient"
                         : undefined
                     }
                   >
@@ -113,12 +123,17 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/shop" className={buttonStyles("primary", "lg", "bg-accent2 text-ink shadow-[0_14px_34px_-16px_rgb(var(--accent2)/0.9)]")}>
-                {content.home.hero.primaryCta}
-                <ArrowRight size={18} aria-hidden="true" />
-              </Link>
-              <Link href="/products" className={buttonStyles("secondary", "lg", "border border-white/25 bg-white/10 text-white backdrop-blur-xl hover:bg-white/20")}>
-                {content.home.hero.secondaryCta}
+              <a
+                href={whatsappLink(BRAND_SETTINGS.whatsapp, "Hi, I would like to place an order.")}
+                target="_blank"
+                rel="noreferrer"
+                className={buttonStyles("gold", "lg", "bg-accent2 text-ink shadow-[0_0_34px_rgb(226_181_74/0.45)] hover:brightness-110")}
+              >
+                <MessageCircle size={18} aria-hidden="true" />
+                {content.home.hero.whatsappCta}
+              </a>
+              <Link href="/products" className={buttonStyles("glass", "lg", "border border-white/25 text-white")}>
+                {content.home.hero.priceListCta}
               </Link>
               <Link href="/track" className={buttonStyles("ghost", "lg", "text-white/75 hover:bg-white/10 hover:text-white")}>
                 {content.home.hero.trackCta}
@@ -128,10 +143,16 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <ul className="mt-8 flex flex-wrap gap-2">
-              {content.home.hero.chips.map((chip) => (
-                <li key={chip} className="rounded-full border border-white/20 bg-white/[0.08] px-3 py-1.5 text-xs text-white/80 backdrop-blur-md">
-                  {chip}
+            <ul className="mt-8 grid max-w-lg grid-cols-2 gap-3 sm:grid-cols-4">
+              {HERO_TRUST.map((item) => (
+                <li
+                  key={item.label}
+                  className="flex items-center gap-2.5 rounded-glass-sm border border-white/10 bg-white/[0.06] px-3 py-2.5 backdrop-blur-xl"
+                >
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/15 bg-white/[0.08] text-accent2">
+                    <item.Icon size={17} strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                  <span className="text-xs font-medium leading-tight text-white/85">{item.label}</span>
                 </li>
               ))}
             </ul>
@@ -145,18 +166,18 @@ export default async function HomePage() {
             <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
               Today&rsquo;s pick
             </p>
-            <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-glass-sm border border-white/50 bg-gradient-to-br from-accent/20 via-white/20 to-accent2/30">
+            <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-glass-sm border border-line/15 bg-gradient-to-br from-accent/15 via-transparent to-accent2/10">
               {spotlight.imagePath ? (
                 <Image
                   src={spotlight.imagePath}
                   alt={spotlight.name}
                   fill
                   sizes="(max-width: 1024px) 90vw, 420px"
-                  className="object-cover"
+                  className="photo-treat object-cover"
                 />
               ) : (
                 <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
-                  <span className="grid h-20 w-20 place-items-center rounded-full border border-white/40 bg-white/45 text-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.8),0_18px_40px_rgb(80_30_20/0.12)] backdrop-blur-2xl">
+                  <span className="grid h-20 w-20 place-items-center rounded-full border border-line/15 bg-white/[0.06] text-accent2 backdrop-blur-2xl">
                     <Sparkles size={32} strokeWidth={1.25} />
                   </span>
                 </span>
@@ -196,8 +217,26 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Stats */}
+      <section className="px-4 py-24">
+        <div className="mx-auto grid w-full max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {content.home.stats.map((stat, index) => (
+            <Reveal key={stat.label} delay={index * 80}>
+              <GlassCard className="border-white/10 bg-white/5 text-center backdrop-blur-2xl">
+                <p className="text-gold-gradient text-4xl font-extrabold tracking-tight">
+                  <Counter to={stat.value} decimals={stat.decimals} suffix={stat.suffix} />
+                </p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  {stat.label}
+                </p>
+              </GlassCard>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* Categories */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-24">
         <div className="mx-auto w-full max-w-6xl">
           <Reveal>
             <SectionHeading
@@ -237,7 +276,7 @@ export default async function HomePage() {
       </section>
 
       {/* Best sellers */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-24">
         <div className="mx-auto w-full max-w-6xl">
           <Reveal>
             <SectionHeading
@@ -286,7 +325,7 @@ export default async function HomePage() {
       ) : null}
 
       {/* Services */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-24">
         <div className="mx-auto w-full max-w-6xl">
           <Reveal>
             <SectionHeading
@@ -315,7 +354,7 @@ export default async function HomePage() {
       </section>
 
       {/* Delivery + heritage */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-24">
         <div className="mx-auto grid w-full max-w-6xl gap-5 lg:grid-cols-[1.4fr_1fr]">
           <Reveal className="h-full">
             <GlassCard padding="lg" className="h-full">
@@ -354,7 +393,7 @@ export default async function HomePage() {
       </section>
 
       {/* Founder */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-24">
         <div className="mx-auto w-full max-w-4xl">
           <Reveal>
             <GlassCard padding="lg">
