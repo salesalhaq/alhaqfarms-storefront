@@ -156,6 +156,7 @@ export function CheckoutClient({
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [profileLoadError, setProfileLoadError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<
     "easypaisa" | "jazzcash" | "cash_on_delivery" | ""
   >("");
@@ -175,6 +176,40 @@ export function CheckoutClient({
   const [idempotencyKey, setIdempotencyKey] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSavedCustomerDetails() {
+      try {
+        const authClient = await getSupabaseAuthClient();
+        if (!active || !authClient) return;
+
+        const { data, error: sessionError } = await authClient.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!active || !data.session) return;
+
+        const metadata = data.session.user.user_metadata ?? {};
+        const fullName = typeof metadata.full_name === "string" ? metadata.full_name : "";
+        const phone = typeof metadata.phone === "string" ? metadata.phone : "";
+        const savedAddress =
+          typeof metadata.delivery_address === "string" ? metadata.delivery_address : "";
+
+        setCustomerName((current) => current || fullName);
+        setCustomerPhone((current) => current || phone);
+        setAddress((current) => current || savedAddress);
+      } catch {
+        if (active) {
+          setProfileLoadError("We couldn't load your saved account details. You can enter them manually.");
+        }
+      }
+    }
+
+    void loadSavedCustomerDetails();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const quoteItemsKey = useMemo(
     () => JSON.stringify(items.map(({ productId, quantityMilli }) => ({ productId, quantityMilli }))),
@@ -352,7 +387,11 @@ export function CheckoutClient({
         setError("Enter the transfer reference shown by your payment app.");
         return false;
       }
-      if (parsedPaymentAmount === null || !quote || Math.abs(parsedPaymentAmount - quote.totalPaisa) > 1) {
+      if (!quote) {
+        setError("The server hasn't confirmed your order total yet. The displayed estimate isn't a confirmed amount due; please try again before transferring.");
+        return false;
+      }
+      if (parsedPaymentAmount === null || Math.abs(parsedPaymentAmount - quote.totalPaisa) > 1) {
         setError("The transfer amount must match the latest order total.");
         return false;
       }
@@ -568,6 +607,7 @@ export function CheckoutClient({
               <section aria-labelledby="checkout-contact-heading">
                 <h2 id="checkout-contact-heading" className="text-xl font-semibold text-ink">Your contact details</h2>
                 <p className="mt-2 text-sm text-muted">We use your mobile number to confirm this order.</p>
+                {profileLoadError && <p role="status" className="mt-4 text-sm text-amber-200">{profileLoadError}</p>}
                 <div className="mt-6 space-y-5">
                   <div>
                     <label className={LABEL} htmlFor="checkout-name">Full name</label>
@@ -628,6 +668,11 @@ export function CheckoutClient({
             {step === 4 && (
               <section aria-labelledby="checkout-transfer-heading">
                 <h2 id="checkout-transfer-heading" className="text-xl font-semibold text-ink">Transfer and receipt</h2>
+                {!quote && paymentMethod !== "cash_on_delivery" && (
+                  <p role="alert" className="mt-4 rounded-glass-sm border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-100">
+                    The server has not confirmed your order total. The estimate in the summary is not a confirmed amount due; please do not transfer until a secure quote is available.
+                  </p>
+                )}
                 {paymentMethod === "cash_on_delivery" ? (
                   <div className="mt-5 rounded-glass-sm bg-line/[0.04] p-4 text-sm text-muted">
                     You selected cash on delivery. No transfer or receipt is required. Please keep your phone available to confirm the order.
@@ -650,7 +695,9 @@ export function CheckoutClient({
                     <div>
                       <label className={LABEL} htmlFor="checkout-amount">Amount transferred (Rs)</label>
                       <input id="checkout-amount" className={FIELD} inputMode="decimal" placeholder="0.00" value={paymentAmount} onChange={(event) => setPaymentAmount(event.target.value)} />
-                      {quote && <p className="mt-2 text-xs text-muted">Amount due: {formatPaisa(quote.totalPaisa, { decimals: true })}</p>}
+                      {quote
+                        ? <p className="mt-2 text-xs text-muted">Amount due: {formatPaisa(quote.totalPaisa, { decimals: true })}</p>
+                        : <p className="mt-2 text-xs text-muted">A confirmed amount due will appear here when the server quote is available.</p>}
                     </div>
                     <div>
                       <label className={LABEL} htmlFor="checkout-receipt">Transfer screenshot (JPEG, PNG, or WebP)</label>

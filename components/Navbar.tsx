@@ -8,9 +8,7 @@ import {
   Clock,
   MapPin,
   Menu,
-  MessageCircle,
   Phone,
-  Search,
   ShieldCheck,
   ShoppingCart,
   Truck,
@@ -24,7 +22,7 @@ import { buttonStyles } from "@/components/ui/GlassButton";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/store";
 import { navigation } from "@/content/site";
-import { BRAND_SETTINGS, whatsappLink, type BrandSettings } from "@/lib/brand";
+import { BRAND_SETTINGS, type BrandSettings } from "@/lib/brand";
 
 interface NavbarProps {
   brand: BrandSettings;
@@ -68,15 +66,6 @@ export function Navbar({ brand }: NavbarProps) {
               </span>
             ))}
           </div>
-          <a
-            href={whatsappLink(brand.whatsapp)}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 text-success transition-colors hover:text-ink"
-          >
-            <MessageCircle size={13} aria-hidden="true" />
-            Chat on WhatsApp
-          </a>
         </div>
       </div>
 
@@ -124,50 +113,35 @@ export function Navbar({ brand }: NavbarProps) {
             </div>
 
             <div className="flex items-center gap-1 md:ml-2">
-              <ThemeMenu />
-              <Link
-                href="/shop"
-                aria-label="Search products"
-                className={buttonStyles("ghost", "sm", "w-10 px-0")}
-              >
-                <Search size={18} aria-hidden="true" />
-              </Link>
-              <Link
-                href="/account"
-                aria-label="My account"
-                className={buttonStyles("ghost", "sm", "w-10 px-0")}
-              >
-                <UserRound size={18} aria-hidden="true" />
-              </Link>
-              <button
-                type="button"
-                aria-label="Cart"
-                onClick={() => setCartOpen(true)}
-                className={buttonStyles("secondary", "sm", "relative w-10 px-0")}
-              >
-                <ShoppingCart size={18} aria-hidden="true" />
-                {cartItemsCount > 0 && (
-                  <motion.span
-                    key={cartItemsCount}
-                    initial={{ scale: 0.4 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 520, damping: 16 }}
-                    className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-on-accent shadow-[0_0_12px_rgb(193_18_31/0.7)]"
-                  >
-                    {cartItemsCount}
-                  </motion.span>
-                )}
-              </button>
-              <a
-                href={whatsappLink(brand.whatsapp)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Order on WhatsApp"
-                className="hidden shrink-0 items-center gap-1.5 rounded-full border border-success/45 bg-success/15 px-3.5 py-2 text-xs font-medium text-success backdrop-blur-xl transition-all hover:bg-success/25 hover:shadow-[0_0_32px_rgb(37_211_102/0.35)] sm:flex"
-              >
-                <MessageCircle size={15} aria-hidden="true" />
-                WhatsApp
-              </a>
+              <div className="hidden items-center gap-1 md:flex">
+                <ThemeMenu />
+                <Link
+                  href="/account"
+                  aria-label="My account"
+                  className={buttonStyles("ghost", "sm", "w-10 px-0")}
+                >
+                  <UserRound size={18} aria-hidden="true" />
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Cart"
+                  onClick={() => setCartOpen(true)}
+                  className={buttonStyles("secondary", "sm", "relative w-10 px-0")}
+                >
+                  <ShoppingCart size={18} aria-hidden="true" />
+                  {cartItemsCount > 0 && (
+                    <motion.span
+                      key={cartItemsCount}
+                      initial={{ scale: 0.4 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 520, damping: 16 }}
+                      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-on-accent shadow-[0_0_12px_rgb(193_18_31/0.7)]"
+                    >
+                      {cartItemsCount}
+                    </motion.span>
+                  )}
+                </button>
+              </div>
               <button
                 type="button"
                 aria-expanded={open}
@@ -183,6 +157,33 @@ export function Navbar({ brand }: NavbarProps) {
 
         {open ? (
           <div className="glass-strong mt-2 rounded-glass p-2 md:hidden">
+            <div className="flex items-center gap-2 border-b border-line/10 px-2 pb-2">
+              <ThemeMenu />
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                aria-label="My account"
+                className={buttonStyles("ghost", "sm", "w-10 px-0")}
+              >
+                <UserRound size={18} aria-hidden="true" />
+              </Link>
+              <button
+                type="button"
+                aria-label="Cart"
+                onClick={() => {
+                  setOpen(false);
+                  setCartOpen(true);
+                }}
+                className={buttonStyles("secondary", "sm", "relative w-10 px-0")}
+              >
+                <ShoppingCart size={18} aria-hidden="true" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-on-accent">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </button>
+            </div>
             {navigation.map((item) => (
               <Link
                 key={item.href}
@@ -199,14 +200,6 @@ export function Navbar({ brand }: NavbarProps) {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/account"
-              onClick={() => setOpen(false)}
-              aria-current={isActive("/account") ? "page" : undefined}
-              className="block rounded-glass-sm px-4 py-3 text-sm text-muted transition-colors hover:bg-line/[0.06] hover:text-ink"
-            >
-              My account
-            </Link>
           </div>
         ) : null}
       </div>
