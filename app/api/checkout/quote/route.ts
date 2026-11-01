@@ -45,6 +45,10 @@ export async function POST(request: Request) {
       p_ip_hash: ipHash,
     });
   if (rateLimitError) {
+    console.error("Checkout quote rate-limit RPC failed.", {
+      code: rateLimitError.code,
+      message: rateLimitError.message,
+    });
     return NextResponse.json(
       { error: rateLimitError.message.toLowerCase().includes("too many quote") ? "Please wait before refreshing your order quote." : "Checkout quoting is unavailable. Please try again later." },
       { status: rateLimitError.message.toLowerCase().includes("too many quote") ? 429 : 503 }
@@ -59,6 +63,10 @@ export async function POST(request: Request) {
   });
 
   if (error) {
+    console.error("Checkout quote calculation RPC failed.", {
+      code: error.code,
+      message: error.message,
+    });
     const message = error.message.toLowerCase();
     const publicMessage =
       message.includes("stock") || message.includes("unavailable")
