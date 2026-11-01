@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Truck,
+  UserRound,
   X,
 } from "lucide-react";
 import { BrandMark } from "@/components/ui/BrandMark";
@@ -131,6 +132,13 @@ export function Navbar({ brand }: NavbarProps) {
               >
                 <Search size={18} aria-hidden="true" />
               </Link>
+              <Link
+                href="/account"
+                aria-label="My account"
+                className={buttonStyles("ghost", "sm", "w-10 px-0")}
+              >
+                <UserRound size={18} aria-hidden="true" />
+              </Link>
               <button
                 type="button"
                 aria-label="Cart"
@@ -191,6 +199,14 @@ export function Navbar({ brand }: NavbarProps) {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/account"
+              onClick={() => setOpen(false)}
+              aria-current={isActive("/account") ? "page" : undefined}
+              className="block rounded-glass-sm px-4 py-3 text-sm text-muted transition-colors hover:bg-line/[0.06] hover:text-ink"
+            >
+              My account
+            </Link>
           </div>
         ) : null}
       </div>
