@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircle, Search, SlidersHorizontal, X } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -23,6 +23,7 @@ interface FilterPanelProps {
     meatType: string;
     allProducts: string;
     priceRange: string;
+    sort: string;
     onSaleOnly: string;
     inStockOnly: string;
     clearFilters: string;
@@ -34,6 +35,8 @@ interface FilterPanelProps {
   categories: Category[];
   categoryCounts: Map<string, number>;
   onCategory: (id: string) => void;
+  sort: SortKey;
+  setSort: (value: SortKey) => void;
   onSaleOnly: boolean;
   setOnSaleOnly: (value: boolean) => void;
   inStockOnly: boolean;
@@ -56,6 +59,8 @@ function FilterPanel({
   categories,
   categoryCounts,
   onCategory,
+  sort,
+  setSort,
   onSaleOnly,
   setOnSaleOnly,
   inStockOnly,
@@ -68,6 +73,7 @@ function FilterPanel({
   hasFilters,
   onClear,
 }: FilterPanelProps) {
+  const sortSelectId = useId();
   const rows = [{ id: "all", name: labels.allProducts }, ...categories];
   const field =
     "w-full rounded-full border border-line/15 bg-white/[0.06] px-4 py-2.5 text-sm text-ink backdrop-blur-xl focus:border-accent2/60 focus:outline-none";
@@ -132,6 +138,24 @@ function FilterPanel({
             className={field}
           />
         </div>
+      </div>
+
+      <div>
+        <label htmlFor={sortSelectId} className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-accent2">
+          {labels.sort}
+        </label>
+        <select
+          id={sortSelectId}
+          value={sort}
+          onChange={(event) => setSort(event.target.value as SortKey)}
+          className={field}
+        >
+          {SORT_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {content.shop.sortOptions[key]}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-3">
@@ -273,7 +297,7 @@ export function ShopClient({
             </button>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+          <div className="grid gap-4">
             <div className="glass-line flex items-center gap-2 rounded-full py-2 pl-4 pr-2">
               <Search size={18} aria-hidden="true" className="shrink-0 text-muted" />
               <input
@@ -285,47 +309,6 @@ export function ShopClient({
                 className="min-w-0 flex-1 bg-transparent py-1.5 text-sm text-ink placeholder:text-muted focus:outline-none"
               />
             </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <label className="glass-line flex items-center gap-2 rounded-full px-4 py-2.5">
-                <SlidersHorizontal size={15} aria-hidden="true" className="text-muted" />
-                <span className="sr-only">{labels.sort}</span>
-                <select
-                  value={sort}
-                  onChange={(event) => setSort(event.target.value as SortKey)}
-                  aria-label={labels.sort}
-                  className="bg-transparent text-sm text-ink focus:outline-none"
-                >
-                  {SORT_KEYS.map((key) => (
-                    <option key={key} value={key}>
-                      {content.shop.sortOptions[key]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setCategory("all")}
-              data-active={category === "all"}
-              className="chip"
-            >
-              All
-            </button>
-            {categories.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setCategory(item.id)}
-                data-active={category === item.id}
-                className="chip"
-              >
-                {item.name}
-              </button>
-            ))}
           </div>
 
         </div>
@@ -343,6 +326,8 @@ export function ShopClient({
               categories={categories}
               categoryCounts={categoryCounts}
               onCategory={setCategory}
+              sort={sort}
+              setSort={setSort}
               onSaleOnly={onSaleOnly}
               setOnSaleOnly={setOnSaleOnly}
               inStockOnly={inStockOnly}
@@ -441,6 +426,8 @@ export function ShopClient({
               categories={categories}
               categoryCounts={categoryCounts}
               onCategory={setCategory}
+              sort={sort}
+              setSort={setSort}
               onSaleOnly={onSaleOnly}
               setOnSaleOnly={setOnSaleOnly}
               inStockOnly={inStockOnly}
