@@ -114,6 +114,15 @@ body {
   border-radius: 8px;
 }
 
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--ink));
+}
+
 @layer components {
   /* Core glass surface: translucent fill, saturated blur, hairline border,
      top specular highlight, inner glow and a layered soft shadow. */

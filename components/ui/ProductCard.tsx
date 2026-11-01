@@ -76,16 +76,12 @@ export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) 
         <div className="photo-vignette" aria-hidden="true" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0b0809]/80 to-transparent" aria-hidden="true" />
 
-        <span className="absolute left-3 top-3 flex flex-col items-start gap-2">
-          {product.onSale ? (
-            <span className="rounded-full bg-accent px-2.5 py-1 text-[0.6875rem] font-semibold uppercase tracking-wide text-on-accent shadow-[0_0_18px_rgb(193_18_31/0.6)]">
-              {labels.sale}
-            </span>
-          ) : null}
+        <span className="absolute left-3 top-3">
           <span
             className={cn(
               "rounded-full border px-2.5 py-1 text-[0.6875rem] font-medium backdrop-blur-xl",
-              stockTone
+              stockTone,
+              soldOut && "motion-safe:animate-pulse"
             )}
           >
             {stockLabel}
@@ -98,7 +94,14 @@ export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) 
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent2/90">
             {product.categoryName ?? ""}
           </p>
-          <h3 className="mt-1 text-base font-semibold leading-snug text-ink">{product.name}</h3>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            {product.onSale ? (
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-on-accent">
+                {labels.sale}
+              </span>
+            ) : null}
+            <h3 className="text-base font-semibold leading-snug text-ink">{product.name}</h3>
+          </div>
         </div>
 
         {product.description ? (

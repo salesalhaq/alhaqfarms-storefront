@@ -35,6 +35,8 @@ interface FilterPanelProps {
   categories: Category[];
   categoryCounts: Map<string, number>;
   onCategory: (id: string) => void;
+  query: string;
+  setQuery: (value: string) => void;
   sort: SortKey;
   setSort: (value: SortKey) => void;
   onSaleOnly: boolean;
@@ -59,6 +61,8 @@ function FilterPanel({
   categories,
   categoryCounts,
   onCategory,
+  query,
+  setQuery,
   sort,
   setSort,
   onSaleOnly,
@@ -73,6 +77,8 @@ function FilterPanel({
   hasFilters,
   onClear,
 }: FilterPanelProps) {
+  const branchSelectId = useId();
+  const searchInputId = useId();
   const sortSelectId = useId();
   const rows = [{ id: "all", name: labels.allProducts }, ...categories];
   const field =
@@ -81,14 +87,27 @@ function FilterPanel({
   return (
     <div className="space-y-6 text-sm">
       <div>
-        <label htmlFor="filter-branch" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-accent2">
+        <label htmlFor={branchSelectId} className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-accent2">
           {labels.selectBranch}
         </label>
-        <select id="filter-branch" value={branchId} onChange={(event) => onBranchChange(event.target.value)} className={field}>
+        <select id={branchSelectId} value={branchId} onChange={(event) => onBranchChange(event.target.value)} className={field}>
           {branches.map((branch) => (
             <option key={branch.id} value={branch.id}>{branch.name}</option>
           ))}
         </select>
+      </div>
+
+      <div className="glass-line flex items-center gap-2 rounded-full py-2 pl-4 pr-3">
+        <Search size={16} aria-hidden="true" className="shrink-0 text-muted" />
+        <input
+          id={searchInputId}
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search products…"
+          aria-label="Search products"
+          className="min-w-0 flex-1 bg-transparent py-1 text-sm text-ink placeholder:text-muted focus:outline-none"
+        />
       </div>
 
       <div>
@@ -275,45 +294,6 @@ export function ShopClient({
 
   return (
     <div className="mx-auto w-full max-w-6xl">
-      <GlassCard variant="strong" spotlight padding="lg" className="mb-8">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent2">
-                {labels.browse}
-              </p>
-              <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-                {content.shop.title}
-              </h1>
-              <p className="mt-1 text-sm text-muted">{content.shop.subtitle}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowFilters(true)}
-              className={cn(buttonStyles("glass", "md"), "lg:hidden")}
-            >
-              <SlidersHorizontal size={16} aria-hidden="true" />
-              Filters
-            </button>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="glass-line flex items-center gap-2 rounded-full py-2 pl-4 pr-2">
-              <Search size={18} aria-hidden="true" className="shrink-0 text-muted" />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search products…"
-                aria-label="Search products"
-                className="min-w-0 flex-1 bg-transparent py-1.5 text-sm text-ink placeholder:text-muted focus:outline-none"
-              />
-            </div>
-          </div>
-
-        </div>
-      </GlassCard>
-
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="hidden lg:block">
           <GlassCard variant="strong" padding="md" className="sticky top-32 space-y-6">
@@ -326,6 +306,8 @@ export function ShopClient({
               categories={categories}
               categoryCounts={categoryCounts}
               onCategory={setCategory}
+              query={query}
+              setQuery={setQuery}
               sort={sort}
               setSort={setSort}
               onSaleOnly={onSaleOnly}
@@ -344,7 +326,20 @@ export function ShopClient({
         </aside>
 
         <div>
-          <p className="mb-5 text-sm text-muted" aria-live="polite">
+          <div className="mb-5 flex items-center justify-between gap-4 lg:hidden">
+            <p className="text-sm text-muted" aria-live="polite">
+              {filtered.length} product{filtered.length === 1 ? "" : "s"}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowFilters(true)}
+              className={buttonStyles("glass", "md")}
+            >
+              <SlidersHorizontal size={16} aria-hidden="true" />
+              Filters
+            </button>
+          </div>
+          <p className="mb-5 hidden text-sm text-muted lg:block" aria-live="polite">
             {filtered.length} product{filtered.length === 1 ? "" : "s"}
           </p>
 
@@ -426,6 +421,8 @@ export function ShopClient({
               categories={categories}
               categoryCounts={categoryCounts}
               onCategory={setCategory}
+              query={query}
+              setQuery={setQuery}
               sort={sort}
               setSort={setSort}
               onSaleOnly={onSaleOnly}
