@@ -18,16 +18,14 @@ export function ForgotPasswordForm() {
     setError("");
     setNotice("");
     setLoading(true);
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Password recovery is not configured yet. Please contact the store.");
-      setLoading(false);
-      return;
-    }
-
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "").trim().toLowerCase();
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Password recovery is not configured yet. Please contact the store.");
+        return;
+      }
       const { error: resetError } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/callback?next=%2Freset-password`,
       });
@@ -74,20 +72,25 @@ export function ResetPasswordForm() {
 
   useEffect(() => {
     let active = true;
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Password recovery is not configured yet. Please contact the store.");
-      return () => { active = false; };
+    async function checkSession() {
+      try {
+        const client = await getSupabaseAuthClient();
+        if (!active) return;
+        if (!client) {
+          setError("Password recovery is not configured yet. Please contact the store.");
+          return;
+        }
+        const { data, error: sessionError } = await client.auth.getSession();
+        if (!active) return;
+        if (sessionError) setError(sessionError.message);
+        else if (!data.session) setError("This reset link is invalid or has expired. Request a new one.");
+        else setReady(true);
+      } catch (cause) {
+        if (active) setError(cause instanceof Error ? cause.message : "We could not connect to the account service.");
+      }
     }
 
-    void client.auth.getSession().then(({ data, error: sessionError }) => {
-      if (!active) return;
-      if (sessionError) setError(sessionError.message);
-      else if (!data.session) setError("This reset link is invalid or has expired. Request a new one.");
-      else setReady(true);
-    }).catch((cause: unknown) => {
-      if (active) setError(cause instanceof Error ? cause.message : "We could not connect to the account service.");
-    });
+    void checkSession();
 
     return () => { active = false; };
   }, []);
@@ -108,13 +111,13 @@ export function ResetPasswordForm() {
       return;
     }
 
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Password recovery is not configured yet. Please contact the store.");
-      return;
-    }
     setLoading(true);
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Password recovery is not configured yet. Please contact the store.");
+        return;
+      }
       const { error: updateError } = await client.auth.updateUser({ password });
       if (updateError) {
         setError(updateError.message);

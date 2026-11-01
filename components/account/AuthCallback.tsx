@@ -16,18 +16,17 @@ export function AuthCallback() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const destination = safeRedirectPath(params.get("next"), "/account");
-    const client = getSupabaseAuthClient();
-
     async function completeSignIn() {
-      if (!client) {
-        setError("Account sign-in is not configured yet. Please contact the store.");
-        return;
-      }
       if (!code) {
         if (active) setError(params.get("error_description") ?? "This sign-in link is invalid or has expired.");
         return;
       }
       try {
+        const client = await getSupabaseAuthClient();
+        if (!client) {
+          setError("Account sign-in is not configured yet. Please contact the store.");
+          return;
+        }
         let exchange = callbackExchanges.get(code);
         if (!exchange) {
           exchange = client.auth.exchangeCodeForSession(code).then(({ error: exchangeError }) =>

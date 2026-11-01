@@ -21,28 +21,24 @@ export function SignInForm({ nextPath }: { nextPath: string }) {
     setNotice("");
     setLoading(true);
 
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account sign-in is not configured yet. Please contact the store.");
-      setLoading(false);
-      return;
-    }
-
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "").trim().toLowerCase();
     const password = String(form.get("password") ?? "");
-    let signInError: Error | null;
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Account sign-in is not configured yet. Please contact the store.");
+        setLoading(false);
+        return;
+      }
       const result = await client.auth.signInWithPassword({ email, password });
-      signInError = result.error;
+      if (result.error) {
+        setError(result.error.message);
+        setLoading(false);
+        return;
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "We could not connect to the account service.");
-      setLoading(false);
-      return;
-    }
-
-    if (signInError) {
-      setError(signInError.message);
       setLoading(false);
       return;
     }
@@ -59,14 +55,13 @@ export function SignInForm({ nextPath }: { nextPath: string }) {
       setError("Enter your email address first.");
       return;
     }
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account sign-in is not configured yet. Please contact the store.");
-      return;
-    }
-
     setLoading(true);
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Account sign-in is not configured yet. Please contact the store.");
+        return;
+      }
       const { error: resendError } = await client.auth.resend({
         type: "signup",
         email: normalizedEmail,

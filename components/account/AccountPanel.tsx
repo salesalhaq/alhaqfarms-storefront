@@ -26,39 +26,47 @@ export function AccountPanel() {
 
   useEffect(() => {
     let active = true;
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account service is not configured yet. Please contact the store.");
-      setLoading(false);
-      return () => { active = false; };
-    }
+    let unsubscribe: (() => void) | null = null;
+    async function initialize() {
+      try {
+        const client = await getSupabaseAuthClient();
+        if (!active) return;
+        if (!client) {
+          setError("Account service is not configured yet. Please contact the store.");
+          setLoading(false);
+          return;
+        }
 
-    void client.auth.getSession().then(({ data, error: sessionError }) => {
-      if (!active) return;
-      if (sessionError) {
-        setError(sessionError.message);
-        setLoading(false);
-      } else if (!data.session) {
-        router.replace("/sign-in?next=%2Faccount");
-      } else {
-        setUser(data.session.user);
+        const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
+          if (!active) return;
+          if (session) setUser(session.user);
+          else router.replace("/sign-in?next=%2Faccount");
+        });
+        unsubscribe = () => authListener.subscription.unsubscribe();
+
+        const { data, error: sessionError } = await client.auth.getSession();
+        if (!active) return;
+        if (sessionError) {
+          setError(sessionError.message);
+          setLoading(false);
+        } else if (!data.session) {
+          router.replace("/sign-in?next=%2Faccount");
+        } else {
+          setUser(data.session.user);
+          setLoading(false);
+        }
+      } catch (cause) {
+        if (!active) return;
+        setError(cause instanceof Error ? cause.message : "We could not connect to the account service.");
         setLoading(false);
       }
-    }).catch((cause: unknown) => {
-      if (!active) return;
-      setError(cause instanceof Error ? cause.message : "We could not connect to the account service.");
-      setLoading(false);
-    });
+    }
 
-    const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
-      if (!active) return;
-      if (session) setUser(session.user);
-      else router.replace("/sign-in?next=%2Faccount");
-    });
+    void initialize();
 
     return () => {
       active = false;
-      authListener.subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, [router]);
 
@@ -66,12 +74,6 @@ export function AccountPanel() {
     event.preventDefault();
     setError("");
     setNotice("");
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account service is not configured yet. Please contact the store.");
-      return;
-    }
-
     const form = new FormData(event.currentTarget);
     const fullName = String(form.get("fullName") ?? "").trim();
     const phone = String(form.get("phone") ?? "").trim();
@@ -88,6 +90,11 @@ export function AccountPanel() {
 
     setSaving(true);
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Account service is not configured yet. Please contact the store.");
+        return;
+      }
       const { data, error: updateError } = await client.auth.updateUser({
         data: { full_name: fullName, phone, whatsapp, delivery_address: deliveryAddress },
       });
@@ -106,13 +113,14 @@ export function AccountPanel() {
 
   async function signOut() {
     setError("");
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account service is not configured yet. Please contact the store.");
-      return;
-    }
     setSigningOut(true);
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Account service is not configured yet. Please contact the store.");
+        setSigningOut(false);
+        return;
+      }
       const { error: signOutError } = await client.auth.signOut();
       if (signOutError) {
         setError(signOutError.message);

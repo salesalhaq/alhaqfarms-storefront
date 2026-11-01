@@ -20,13 +20,6 @@ export function SignUpForm() {
     setNotice("");
     setLoading(true);
 
-    const client = getSupabaseAuthClient();
-    if (!client) {
-      setError("Account registration is not configured yet. Please contact the store.");
-      setLoading(false);
-      return;
-    }
-
     const form = new FormData(event.currentTarget);
     const fullName = String(form.get("fullName") ?? "").trim();
     const email = String(form.get("email") ?? "").trim().toLowerCase();
@@ -57,6 +50,11 @@ export function SignUpForm() {
     }
 
     try {
+      const client = await getSupabaseAuthClient();
+      if (!client) {
+        setError("Account registration is not configured yet. Please contact the store.");
+        return;
+      }
       const { data, error: signUpError } = await client.auth.signUp({
         email,
         password,
