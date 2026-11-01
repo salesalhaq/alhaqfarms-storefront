@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Toast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/store";
+import { useWishlist } from "@/lib/wishlist";
 import type { Product } from "@/lib/types";
 
 interface ProductGridProps {
@@ -26,6 +27,7 @@ export function ProductGrid({
   columnsClassName,
 }: ProductGridProps) {
   const { addItem } = useCart();
+  const { error: wishlistError, clearError: clearWishlistError } = useWishlist();
   const [notice, setNotice] = useState<string | null>(null);
 
   const handleAddToCart = useCallback(
@@ -60,6 +62,14 @@ export function ProductGrid({
           </Reveal>
         ))}
       </div>
+      {wishlistError && (
+        <p role="alert" className="mt-4 rounded-glass-sm border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
+          {wishlistError}{" "}
+          <button type="button" onClick={clearWishlistError} className="ml-2 underline underline-offset-2">
+            Dismiss
+          </button>
+        </p>
+      )}
       <Toast message={notice} onDismiss={() => setNotice(null)} />
     </>
   );

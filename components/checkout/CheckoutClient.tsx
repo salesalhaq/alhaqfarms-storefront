@@ -9,6 +9,7 @@ import { GlassButton } from "@/components/ui/GlassButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { TurnstileWidget } from "@/components/checkout/TurnstileWidget";
 import { useCart } from "@/lib/store";
+import { getSupabaseAuthClient } from "@/lib/supabase-auth";
 import type { Branch } from "@/lib/types";
 import {
   formatPaisa,
@@ -414,7 +415,14 @@ export function CheckoutClient({
     }
 
     try {
-      const response = await fetch("/api/orders", { method: "POST", body: formData });
+      const headers: Record<string, string> = {};
+      const authClient = await getSupabaseAuthClient();
+      if (authClient) {
+        const { data: authData, error: authError } = await authClient.auth.getSession();
+        if (authError) throw new Error("Could not verify your account session. Please try again.");
+        if (authData.session) headers.Authorization = `Bearer ${authData.session.access_token}`;
+      }
+      const response = await fetch("/api/orders", { method: "POST", headers, body: formData });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "We could not place the order.");
       window.sessionStorage.removeItem("sf:checkout-attempt");

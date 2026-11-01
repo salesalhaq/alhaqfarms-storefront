@@ -91,6 +91,13 @@ Supabase configuration and review:
 
 Review `supabase-proposed/README.md` before applying any SQL. For checkout and tracking, review and apply `002`–`008` in order. These files are proposals only and have not been applied:
 
+Customer wishlists and account order history additionally require the tracked
+[`supabase/migrations/202611010001_customer_wishlist_order_history.sql`](./supabase/migrations/202611010001_customer_wishlist_order_history.sql)
+migration after proposals `002`–`008` have been reviewed and applied. It creates
+a private per-user wishlist and associates only newly placed, signed-in
+storefront orders with their Supabase Auth user. Existing guest orders and the
+desktop app's receivables customer records are not automatically linked.
+
 The owner must configure branch delivery areas, COD rules, and payment accounts before those options become available. Storefront reservations do not lock stock against simultaneous desktop POS sales; enforcing shared reservations requires a desktop-app change and is intentionally out of scope.
 
 See `supabase-proposed/README.md` for details.

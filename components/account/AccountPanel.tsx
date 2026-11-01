@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowRight, LogOut, PackageCheck, UserRound } from "lucide-react";
+import { Heart, LogOut, PackageCheck, UserRound } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ACCOUNT_FIELD, ACCOUNT_LABEL } from "@/components/account/account-styles";
+import { CustomerOrderHistory } from "@/components/account/CustomerOrderHistory";
+import { CustomerWishlist } from "@/components/account/CustomerWishlist";
 import { getSupabaseAuthClient } from "@/lib/supabase-auth";
 
 function metadataText(user: User, key: string): string {
@@ -18,6 +19,7 @@ function metadataText(user: User, key: string): string {
 export function AccountPanel() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState<"profile" | "wishlist" | "orders">("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -174,7 +176,22 @@ export function AccountPanel() {
         </GlassButton>
       </GlassCard>
 
-      <GlassCard as="section" padding="lg">
+      <nav aria-label="Account sections" className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => setActiveTab("profile")} aria-pressed={activeTab === "profile"}
+          className={`rounded-full border px-4 py-2 text-sm font-medium ${activeTab === "profile" ? "border-accent bg-accent text-on-accent" : "border-line/15 text-muted hover:text-ink"}`}>
+          Profile
+        </button>
+        <button type="button" onClick={() => setActiveTab("wishlist")} aria-pressed={activeTab === "wishlist"}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === "wishlist" ? "border-accent bg-accent text-on-accent" : "border-line/15 text-muted hover:text-ink"}`}>
+          <Heart size={15} aria-hidden="true" /> Wishlist
+        </button>
+        <button type="button" onClick={() => setActiveTab("orders")} aria-pressed={activeTab === "orders"}
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === "orders" ? "border-accent bg-accent text-on-accent" : "border-line/15 text-muted hover:text-ink"}`}>
+          <PackageCheck size={15} aria-hidden="true" /> Order history
+        </button>
+      </nav>
+
+      {activeTab === "profile" && <GlassCard as="section" padding="lg">
         <h2 className="text-xl font-semibold text-ink">Personal and delivery details</h2>
         <p className="mt-1 text-sm text-muted">Keep your contact information and preferred delivery address up to date.</p>
         {error && <p role="alert" className="mt-5 rounded-glass-sm border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
@@ -210,20 +227,10 @@ export function AccountPanel() {
           </div>
           <GlassButton type="submit" disabled={saving}>{saving ? "Saving…" : "Save account details"}</GlassButton>
         </form>
-      </GlassCard>
+      </GlassCard>}
 
-      <GlassCard as="section" padding="md" className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <PackageCheck size={20} aria-hidden="true" className="text-accent2" />
-          <div>
-            <h2 className="font-semibold text-ink">Already placed an order?</h2>
-            <p className="text-sm text-muted">Track it with your order number and phone number.</p>
-          </div>
-        </div>
-        <Link href="/track" className="inline-flex items-center gap-2 text-sm font-semibold text-accent2 hover:underline">
-          Track an order <ArrowRight size={16} aria-hidden="true" />
-        </Link>
-      </GlassCard>
+      {activeTab === "wishlist" && <CustomerWishlist />}
+      {activeTab === "orders" && <CustomerOrderHistory />}
     </div>
   );
 }

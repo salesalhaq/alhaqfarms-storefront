@@ -5,6 +5,7 @@ import {
   orderRequestSchema,
 } from "@/lib/checkout-validation";
 import { isSameOrigin } from "@/lib/request-security";
+import { getRequestCustomer } from "@/lib/server-auth";
 import { hmacHex, toHex } from "@/lib/server-crypto";
 import { getServerSupabase } from "@/lib/server-supabase";
 
@@ -88,6 +89,11 @@ export async function POST(request: Request) {
 
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("multipart/form-data")) {
     return NextResponse.json({ error: "Order details must be sent using the checkout form." }, { status: 415 });
+  }
+
+  const customer = await getRequestCustomer(request);
+  if (customer.error) {
+    return NextResponse.json({ error: customer.error }, { status: customer.status ?? 401 });
   }
 
   let form: FormData;
@@ -233,9 +239,10 @@ export async function POST(request: Request) {
     }
   }
 
-  const { data, error: createError } = await client
-    .schema("storefront")
-    .rpc("storefront_create_web_order", {
+  const createOrderRpc = customer.userId
+    ? "storefront_create_web_order_for_customer"
+    : "storefront_create_web_order";
+  const createOrderArgs = {
       p_idempotency_key: order.idempotencyKey,
       p_order_number: orderNumber,
       p_branch_id: order.branchId,
@@ -255,7 +262,11 @@ export async function POST(request: Request) {
       p_screenshot_sha256: screenshotHash,
       p_items: order.items,
       p_notes: order.notes ?? null,
-    });
+      ...(customer.userId ? { p_customer_user_id: customer.userId } : {}),
+  };
+  const { data, error: createError } = await client
+    .schema("storefront")
+    .rpc(createOrderRpc, createOrderArgs);
 
   if (createError) {
     if (proofPath) {

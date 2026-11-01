@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { CartProvider } from "@/lib/store";
+import { WishlistProvider } from "@/lib/wishlist";
 import { THEME_INIT_SCRIPT } from "@/components/theme/theme-init";
 import { AuroraBackground } from "@/components/ui/AuroraBackground";
 import { BRAND_SETTINGS } from "@/lib/brand";
@@ -61,10 +62,12 @@ export default function RootLayout({
       <body className="min-h-screen">
         <ThemeProvider>
           <CartProvider>
-            <AuroraBackground />
-            <Navbar brand={BRAND_SETTINGS} />
-            <div className="pt-28 sm:pt-32">{children}</div>
-            <Footer brand={BRAND_SETTINGS} />
+            <WishlistProvider>
+              <AuroraBackground />
+              <Navbar brand={BRAND_SETTINGS} />
+              <div className="pt-28 sm:pt-32">{children}</div>
+              <Footer brand={BRAND_SETTINGS} />
+            </WishlistProvider>
           </CartProvider>
         </ThemeProvider>
       </body>

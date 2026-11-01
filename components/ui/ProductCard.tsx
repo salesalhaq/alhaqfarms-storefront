@@ -1,12 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { GlassButton } from "./GlassButton";
 import { GlassCard } from "./GlassCard";
 import { cn, formatPaisa, formatQuantity, isFractionalUnit, unitLabel } from "@/lib/utils";
 import { LOW_STOCK_THRESHOLD_MILLI } from "@/lib/catalog";
 import type { Product } from "@/lib/types";
+import { useWishlist } from "@/lib/wishlist";
+import { useState } from "react";
 
 type StockState = "in" | "low" | "out" | "unknown";
 
@@ -30,9 +33,24 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { productIds, session, ready, toggleProduct } = useWishlist();
+  const [wishlistPending, setWishlistPending] = useState(false);
   const stock = stockState(product);
   const soldOut = stock === "out";
+  const wishlisted = productIds.has(product.id);
   const perUnit = `per ${unitLabel(product.unitCode)}`;
+
+  async function toggleWishlist() {
+    if (!session) {
+      router.push(`/sign-in?next=${encodeURIComponent(pathname || "/shop")}`);
+      return;
+    }
+    setWishlistPending(true);
+    await toggleProduct(product.id);
+    setWishlistPending(false);
+  }
 
   const stockLabel =
     stock === "out" ? labels.outOfStock : stock === "low" ? labels.lowStock : labels.inStock;
@@ -87,6 +105,16 @@ export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) 
             {stockLabel}
           </span>
         </span>
+        <button
+          type="button"
+          onClick={toggleWishlist}
+          aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+          aria-pressed={wishlisted}
+          disabled={!ready || wishlistPending}
+          className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/55 text-white backdrop-blur transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
+        >
+          <Heart size={18} aria-hidden="true" className={wishlisted ? "fill-current text-accent" : ""} />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
