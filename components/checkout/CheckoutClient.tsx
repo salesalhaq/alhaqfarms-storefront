@@ -632,14 +632,42 @@ export function CheckoutClient({
                 <p className="mt-2 text-sm text-muted">Only methods configured for this storefront are shown.</p>
                 <div className="mt-6 space-y-3">
                   {transferAccounts.map((account) => (
-                    <label key={account.payment_method} className={`flex cursor-pointer items-start gap-3 rounded-glass-sm border p-4 ${paymentMethod === account.payment_method ? "border-accent bg-accent/10" : "border-line/10"}`}>
-                      <input type="radio" name="payment-method" value={account.payment_method} checked={paymentMethod === account.payment_method}
-                        onChange={() => setPaymentMethod(account.payment_method)} className="mt-1 accent-accent" />
-                      <span>
-                        <span className="block font-medium capitalize text-ink">{account.payment_method}</span>
-                        <span className="mt-1 block text-xs text-muted">Transfer first, then provide the reference and receipt.</span>
-                      </span>
-                    </label>
+                    <div
+                      key={account.payment_method}
+                      className={`rounded-glass-sm border p-4 ${paymentMethod === account.payment_method ? "border-accent bg-accent/10" : "border-line/10"}`}
+                    >
+                      <label className="flex cursor-pointer items-start gap-3">
+                        <input type="radio" name="payment-method" value={account.payment_method} checked={paymentMethod === account.payment_method}
+                          onChange={() => setPaymentMethod(account.payment_method)} className="mt-1 accent-accent" />
+                        <span>
+                          <span className="block font-medium capitalize text-ink">{account.payment_method}</span>
+                          <span className="mt-1 block text-xs text-muted">Transfer first, then provide the reference and receipt.</span>
+                        </span>
+                      </label>
+                      {paymentMethod === account.payment_method && (
+                        <div className="mt-4 border-t border-line/10 pt-4">
+                          <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                            {account.payment_method} account details
+                          </p>
+                          <p className="mt-2 text-sm font-semibold text-ink">{account.account_title}</p>
+                          <p className="mt-1 select-all text-sm text-ink">{account.account_number}</p>
+                          {account.instructions && (
+                            <p className="mt-3 whitespace-pre-line text-xs text-muted">{account.instructions}</p>
+                          )}
+                          {account.qr_code_data_url &&
+                            /^data:image\/(?:png|jpeg|webp);base64,/i.test(account.qr_code_data_url) && (
+                              <Image
+                                src={account.qr_code_data_url}
+                                alt={`${account.payment_method} payment QR code`}
+                                width={240}
+                                height={240}
+                                unoptimized
+                                className="mt-4 h-48 w-48 rounded-lg bg-white object-contain p-2"
+                              />
+                            )}
+                        </div>
+                      )}
+                    </div>
                   ))}
                   {fulfillmentType === "delivery" && codSetting && (
                     <label className={`flex cursor-pointer items-start gap-3 rounded-glass-sm border p-4 ${paymentMethod === "cash_on_delivery" ? "border-accent bg-accent/10" : "border-line/10"} ${!codAvailable ? "opacity-60" : ""}`}>
