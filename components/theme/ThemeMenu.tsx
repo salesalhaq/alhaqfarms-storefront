@@ -59,9 +59,9 @@ export function ThemeMenu() {
         >
           <fieldset>
             <legend className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted">
-              Glass theme
+              Color theme
             </legend>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {GLASS_THEMES.map((theme) => {
                 const active = mounted && glass === theme.id;
                 return (
@@ -78,8 +78,10 @@ export function ThemeMenu() {
                   >
                     <span
                       aria-hidden="true"
-                      className="h-5 w-5 rounded-full"
-                      style={{ backgroundColor: theme.swatch }}
+                      className="h-6 w-6 rounded-full border border-line/30"
+                      style={{
+                        background: `linear-gradient(180deg, ${theme.colors.join(", ")})`,
+                      }}
                     />
                     <span className="sr-only">{theme.label}</span>
                   </button>

@@ -30,7 +30,7 @@ const config: Config = {
       boxShadow: {
         glass: "0 8px 32px rgb(0 0 0 / 0.45)",
         "glass-lift": "0 16px 44px rgb(0 0 0 / 0.5)",
-        "glow-crimson": "0 0 40px rgb(193 18 31 / 0.25)",
+        "glow-crimson": "0 0 40px rgb(var(--accent) / 0.25)",
       },
       borderRadius: {
         glass: "var(--radius)",

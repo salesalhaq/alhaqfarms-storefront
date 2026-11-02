@@ -1,4 +1,12 @@
-export type GlassTheme = "garnet" | "ocean" | "emerald" | "midnight" | "sunset";
+export type GlassTheme =
+  | "palette-13-first"
+  | "palette-13-last"
+  | "palette-14-first"
+  | "palette-14-last"
+  | "palette-15-first"
+  | "palette-15-last"
+  | "palette-16-first"
+  | "palette-16-last";
 export type ColorMode = "light" | "dark" | "system";
 
 export interface BrandSettings {
@@ -16,12 +24,20 @@ export interface BrandSettings {
   themeId: GlassTheme;
 }
 
-export const GLASS_THEMES: ReadonlyArray<{ id: GlassTheme; label: string; swatch: string }> = [
-  { id: "garnet", label: "Garnet & Gold", swatch: "#a20d19" },
-  { id: "emerald", label: "Emerald", swatch: "#10b981" },
-  { id: "ocean", label: "Ocean", swatch: "#0ea5e9" },
-  { id: "midnight", label: "Midnight", swatch: "#818cf8" },
-  { id: "sunset", label: "Sunset", swatch: "#f97316" },
+export const GLASS_THEMES: ReadonlyArray<{
+  id: GlassTheme;
+  label: string;
+  swatch: string;
+  colors: readonly [string, string, string, string];
+}> = [
+  { id: "palette-13-first", label: "Row 13 · First column", swatch: "#A867A1", colors: ["#4D3A4D", "#A867A1", "#D69BC9", "#E3D3D3"] },
+  { id: "palette-13-last", label: "Row 13 · Last column", swatch: "#FED517", colors: ["#FED517", "#369946", "#06365A", "#011F41"] },
+  { id: "palette-14-first", label: "Row 14 · First column", swatch: "#FCD033", colors: ["#374667", "#1BB1D4", "#FCD033", "#F73558"] },
+  { id: "palette-14-last", label: "Row 14 · Last column", swatch: "#158CA2", colors: ["#FFF5F4", "#B1D438", "#158CA2", "#000000"] },
+  { id: "palette-15-first", label: "Row 15 · First column", swatch: "#4C546B", colors: ["#182037", "#4C546B", "#BE3721", "#D8D8D8"] },
+  { id: "palette-15-last", label: "Row 15 · Last column", swatch: "#089B95", colors: ["#9A64C4", "#089B95", "#14CEA5", "#F0E6E5"] },
+  { id: "palette-16-first", label: "Row 16 · First column", swatch: "#F66A2C", colors: ["#E4DFD9", "#80716A", "#4E433D", "#F66A2C"] },
+  { id: "palette-16-last", label: "Row 16 · Last column", swatch: "#43785E", colors: ["#3F3F3F", "#43785E", "#B5CC98", "#F7F7BB"] },
 ];
 
 export const BRAND_SETTINGS: BrandSettings = {
@@ -34,7 +50,7 @@ export const BRAND_SETTINGS: BrandSettings = {
   whatsapp: "923333867073",
   logoUrl: "/assets/brand/alhaq-farms-icon.png",
   accentColor: null,
-  themeId: "garnet",
+  themeId: "palette-15-first",
 };
 
 export function whatsappLink(whatsapp: string, message?: string): string {

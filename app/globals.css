@@ -14,7 +14,7 @@
 
   --glass-blur: 20px;
   --glass-sat: 1.5;
-  --glass-fill: 255 255 255;
+  --glass-fill: 190 55 33;
   --glass-fill-op: 0.06;
   --glass-line-op: 0.14;
   --glass-sheen: 0.12;
@@ -22,70 +22,169 @@
   --glass-strong-op: 0.1;
   --glass-strong-blur: 28px;
 
-  --accent: 193 18 31;
-  --accent2: 226 181 74;
+  --accent: 190 55 33;
+  --accent2: 190 55 33;
   --on-accent: 255 255 255;
   --success: 37 211 102;
-  --primary-deep: 122 0 0;
-  --aurora-1: 193 18 31;
-  --aurora-2: 226 181 74;
-  --aurora-3: 122 0 0;
-  --aurora-4: 226 181 74;
+  --primary-deep: 76 84 107;
+  --aurora-1: 190 55 33;
+  --aurora-2: 216 216 216;
+  --aurora-3: 76 84 107;
+  --aurora-4: 190 55 33;
 
-  /* Dark is the only palette; the pre-paint script just locks it in. */
-  --canvas: 11 8 9;
-  --surface: 20 14 16;
-  --ink: 245 237 234;
-  --muted: 185 169 165;
+  --canvas: 24 32 55;
+  --surface: 76 84 107;
+  --ink: 216 216 216;
+  --muted: 216 216 216;
+  --line: 216 216 216;
+  --scrim: 24 32 55;
+}
+
+/* Palette themes update the page, glass, borders, text and ambient effects. */
+html[data-glass="palette-13-first"] {
+  --canvas: 36 27 37;
+  --surface: 168 103 161;
+  --ink: 227 211 211;
+  --muted: 227 211 211;
+  --line: 227 211 211;
+  --scrim: 36 27 37;
+  --glass-fill: 214 155 201;
+  --accent: 168 103 161;
+  --accent2: 214 155 201;
+  --on-accent: 20 13 22;
+  --primary-deep: 77 58 77;
+  --aurora-1: 168 103 161;
+  --aurora-2: 214 155 201;
+  --aurora-3: 77 58 77;
+  --aurora-4: 227 211 211;
+}
+html[data-glass="palette-13-last"] {
+  --canvas: 254 213 23;
+  --surface: 54 153 70;
+  --ink: 1 31 65;
+  --muted: 1 31 65;
+  --line: 1 31 65;
+  --scrim: 254 213 23;
+  --glass-fill: 6 54 90;
+  --accent: 54 153 70;
+  --accent2: 6 54 90;
+  --on-accent: 15 31 16;
+  --primary-deep: 254 213 23;
+  --aurora-1: 254 213 23;
+  --aurora-2: 54 153 70;
+  --aurora-3: 6 54 90;
+  --aurora-4: 1 31 65;
+}
+html[data-glass="palette-14-first"] {
+  --canvas: 55 70 103;
+  --surface: 27 177 212;
+  --ink: 255 255 255;
+  --muted: 255 255 255;
   --line: 255 255 255;
-  --scrim: 11 8 9;
+  --scrim: 55 70 103;
+  --glass-fill: 252 208 51;
+  --accent: 27 177 212;
+  --accent2: 252 208 51;
+  --on-accent: 3 35 46;
+  --primary-deep: 55 70 103;
+  --aurora-1: 27 177 212;
+  --aurora-2: 252 208 51;
+  --aurora-3: 55 70 103;
+  --aurora-4: 247 53 88;
 }
-
-/* Switchable glass themes: accent + ambient aurora palette */
-html[data-glass="garnet"] {
-  --accent: 162 13 25;
-  --accent2: 214 164 65;
+html[data-glass="palette-14-last"] {
+  --canvas: 255 245 244;
+  --surface: 177 212 56;
+  --ink: 0 0 0;
+  --muted: 0 0 0;
+  --line: 0 0 0;
+  --scrim: 255 245 244;
+  --glass-fill: 21 140 162;
+  --accent: 177 212 56;
+  --accent2: 21 140 162;
+  --on-accent: 19 36 16;
+  --primary-deep: 255 245 244;
+  --aurora-1: 177 212 56;
+  --aurora-2: 21 140 162;
+  --aurora-3: 255 245 244;
+  --aurora-4: 0 0 0;
+}
+html[data-glass="palette-15-first"] {
+  --canvas: 24 32 55;
+  --surface: 76 84 107;
+  --ink: 216 216 216;
+  --muted: 216 216 216;
+  --line: 216 216 216;
+  --scrim: 24 32 55;
+  --glass-fill: 190 55 33;
+  --accent: 76 84 107;
+  --accent2: 190 55 33;
   --on-accent: 255 255 255;
-  --aurora-1: 162 13 25;
-  --aurora-2: 214 164 65;
-  --aurora-3: 227 194 147;
-  --aurora-4: 120 31 37;
+  --primary-deep: 76 84 107;
+  --aurora-1: 76 84 107;
+  --aurora-2: 190 55 33;
+  --aurora-3: 24 32 55;
+  --aurora-4: 216 216 216;
 }
-html[data-glass="emerald"] {
-  --accent: 16 185 129;
-  --accent2: 45 212 191;
-  --on-accent: 3 24 17;
-  --aurora-1: 16 185 129;
-  --aurora-2: 20 184 166;
-  --aurora-3: 59 130 246;
+html[data-glass="palette-15-last"] {
+  --canvas: 154 100 196;
+  --surface: 8 155 149;
+  --ink: 20 12 30;
+  --muted: 20 12 30;
+  --line: 20 12 30;
+  --scrim: 154 100 196;
+  --glass-fill: 20 206 165;
+  --accent: 8 155 149;
+  --accent2: 20 206 165;
+  --on-accent: 3 35 33;
+  --primary-deep: 154 100 196;
+  --aurora-1: 8 155 149;
+  --aurora-2: 20 206 165;
+  --aurora-3: 154 100 196;
+  --aurora-4: 20 12 30;
 }
-html[data-glass="ocean"] {
-  --accent: 14 165 233;
-  --accent2: 56 189 248;
-  --on-accent: 3 20 32;
-  --aurora-1: 14 165 233;
-  --aurora-2: 99 102 241;
-  --aurora-3: 34 211 238;
+html[data-glass="palette-16-first"] {
+  --canvas: 228 223 217;
+  --surface: 128 113 106;
+  --ink: 78 67 61;
+  --muted: 78 67 61;
+  --line: 78 67 61;
+  --scrim: 228 223 217;
+  --glass-fill: 78 67 61;
+  --accent: 128 113 106;
+  --accent2: 78 67 61;
+  --on-accent: 255 255 255;
+  --primary-deep: 228 223 217;
+  --aurora-1: 128 113 106;
+  --aurora-2: 78 67 61;
+  --aurora-3: 228 223 217;
+  --aurora-4: 78 67 61;
 }
-html[data-glass="midnight"] {
-  --accent: 129 140 248;
-  --accent2: 167 139 250;
-  --on-accent: 9 9 28;
-  --aurora-1: 99 102 241;
-  --aurora-2: 139 92 246;
-  --aurora-3: 56 189 248;
-}
-html[data-glass="sunset"] {
-  --accent: 249 115 22;
-  --accent2: 244 114 182;
-  --on-accent: 32 12 2;
-  --aurora-1: 249 115 22;
-  --aurora-2: 236 72 153;
-  --aurora-3: 250 204 21;
+html[data-glass="palette-16-last"] {
+  --canvas: 63 63 63;
+  --surface: 67 120 94;
+  --ink: 247 247 187;
+  --muted: 247 247 187;
+  --line: 247 247 187;
+  --scrim: 63 63 63;
+  --glass-fill: 181 204 152;
+  --accent: 67 120 94;
+  --accent2: 181 204 152;
+  --on-accent: 255 255 255;
+  --primary-deep: 63 63 63;
+  --aurora-1: 67 120 94;
+  --aurora-2: 181 204 152;
+  --aurora-3: 63 63 63;
+  --aurora-4: 247 247 187;
 }
 
 html {
   color-scheme: dark;
+}
+html[data-glass="palette-13-last"],
+html[data-glass="palette-14-last"],
+html[data-glass="palette-16-first"] {
+  color-scheme: light;
 }
 
 /* Mobile: dial blur back and keep stacked blur layers low. */
@@ -99,6 +198,7 @@ html {
 body {
   background-color: rgb(var(--canvas));
   color: rgb(var(--ink));
+  transition: background-color 240ms ease, color 240ms ease;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background-image:
@@ -115,7 +215,7 @@ body {
 }
 
 select {
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 select option {
@@ -137,6 +237,7 @@ select option {
       inset 0 1px 0 0 rgb(var(--line) / var(--glass-sheen)),
       inset 0 0 0 1px rgb(var(--line) / 0.05),
       var(--glass-shadow);
+    transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease;
   }
 
   /* High-saturation glass for featured elements */
@@ -152,7 +253,7 @@ select option {
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.4),
+      inset 0 1px 0 0 rgb(var(--line) / 0.4),
       inset 0 0 20px 0 rgb(var(--accent) / 0.1),
       var(--glass-shadow);
   }
@@ -162,7 +263,7 @@ select option {
     background:
       linear-gradient(105deg, rgb(var(--accent) / 0.97), rgb(var(--accent) / 0.9) 54%, rgb(var(--accent) / 0.96));
     color: rgb(var(--on-accent));
-    box-shadow: 0 8px 24px -16px rgb(var(--accent) / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.24);
+    box-shadow: 0 8px 24px -16px rgb(var(--accent) / 0.9), inset 0 1px 0 rgb(var(--line) / 0.24);
   }
 
   .hero-stage {
@@ -170,14 +271,14 @@ select option {
     background:
       radial-gradient(ellipse at 82% 16%, rgb(var(--accent2) / 0.36), transparent 38%),
       radial-gradient(ellipse at 95% 82%, rgb(var(--accent) / 0.46), transparent 42%),
-      linear-gradient(115deg, rgb(36 23 24), rgb(69 33 34) 58%, rgb(87 48 39));
+      linear-gradient(115deg, rgb(var(--canvas)), rgb(var(--surface)) 58%, rgb(var(--canvas)));
     box-shadow: 0 32px 80px -44px rgb(var(--accent) / 0.45);
   }
 
   .hero-glass {
     background: linear-gradient(135deg, rgb(var(--glass-fill) / 0.12), rgb(var(--glass-fill) / 0.05));
     border: 1px solid rgb(var(--line) / 0.16);
-    box-shadow: 0 24px 70px -38px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.12);
+    box-shadow: 0 24px 70px -38px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(var(--line) / 0.12);
     -webkit-backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
     backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
   }
@@ -190,20 +291,21 @@ select option {
     -webkit-backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
     backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
     box-shadow: inset 0 1px 0 0 rgb(var(--line) / var(--glass-sheen)), var(--glass-shadow);
+    transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease;
   }
 
   .glass-crimson {
-    background: linear-gradient(135deg, rgba(193, 18, 31, 0.45), rgba(122, 0, 0, 0.25));
-    border: 1px solid rgba(193, 18, 31, 0.35);
+    background: linear-gradient(135deg, rgb(var(--accent) / 0.45), rgb(var(--primary-deep) / 0.25));
+    border: 1px solid rgb(var(--accent) / 0.35);
     backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14), var(--glass-shadow);
+    box-shadow: inset 0 1px 0 0 rgb(var(--line) / 0.14), var(--glass-shadow);
   }
 
   .glass-gold {
-    background: linear-gradient(135deg, rgba(226, 181, 74, 0.22), rgba(226, 181, 74, 0.06));
-    border: 1px solid rgba(226, 181, 74, 0.35);
+    background: linear-gradient(135deg, rgb(var(--accent2) / 0.22), rgb(var(--accent2) / 0.06));
+    border: 1px solid rgb(var(--accent2) / 0.35);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14), var(--glass-shadow);
+    box-shadow: inset 0 1px 0 0 rgb(var(--line) / 0.14), var(--glass-shadow);
   }
 
   .glass-spotlight::before {
@@ -213,7 +315,7 @@ select option {
     border-radius: inherit;
     opacity: 0;
     transition: opacity 0.3s ease;
-    background: radial-gradient(340px circle at var(--x, 50%) var(--y, 0%), rgba(226, 181, 74, 0.16), transparent 62%);
+    background: radial-gradient(340px circle at var(--x, 50%) var(--y, 0%), rgb(var(--accent2) / 0.16), transparent 62%);
     pointer-events: none;
   }
   .glass-spotlight:hover::before { opacity: 1; }
@@ -224,8 +326,8 @@ select option {
   @media (hover: hover) {
     .glass-interactive:hover {
       transform: translateY(-4px);
-      border-color: rgba(255, 255, 255, 0.26);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 0 40px rgba(193, 18, 31, 0.25), var(--glass-shadow);
+      border-color: rgb(var(--line) / 0.26);
+      box-shadow: inset 0 1px 0 0 rgb(var(--line) / 0.12), 0 0 40px rgb(var(--accent) / 0.25), var(--glass-shadow);
     }
   }
 
@@ -238,7 +340,7 @@ select option {
     left: 0;
     width: 42%;
     transform: translateX(-140%) skewX(-14deg);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--line) / 0.12), transparent);
     pointer-events: none;
   }
   .glass-sweep:hover::after { animation: glassSweep 0.9s ease; }
@@ -248,7 +350,7 @@ select option {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at 50% 42%, transparent 52%, rgba(11, 8, 9, 0.55));
+    background: radial-gradient(ellipse at 50% 42%, transparent 52%, rgb(var(--scrim) / 0.55));
   }
   .hero-media { animation: kenburns 20s ease-out forwards; }
 
@@ -257,7 +359,7 @@ select option {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(520px circle at var(--cx, 50%) var(--cy, 30%), rgba(226, 181, 74, 0.07), transparent 68%);
+    background: radial-gradient(520px circle at var(--cx, 50%) var(--cy, 30%), rgb(var(--accent2) / 0.07), transparent 68%);
   }
 
   /* Thin light border only — for overlays that must not stack blur layers. */
@@ -291,7 +393,7 @@ select option {
   .skeleton {
     position: relative;
     overflow: hidden;
-    background-color: rgb(255 255 255 / 0.06);
+    background-color: rgb(var(--line) / 0.06);
     border-radius: var(--radius-sm);
   }
   .skeleton::after {
@@ -302,14 +404,13 @@ select option {
     background-image: linear-gradient(
       90deg,
       transparent,
-      rgb(255 255 255 / 0.06),
+      rgb(var(--line) / 0.06),
       transparent
     );
     animation: shimmer 1.7s infinite;
   }
 
-  /* Ambient animated background — crimson top-left, gold center-right, wine
-     bottom. Fixed, behind everything, removed in low-effects mode. */
+  /* Ambient background uses the selected theme's accent and depth colors. */
   .aurora {
     position: fixed;
     inset: 0;
@@ -410,7 +511,7 @@ select option {
 }
 
 .text-gold-gradient {
-  background-image: linear-gradient(100deg, #f8d78e, #fff4d6 45%, #d7a64e);
+  background-image: linear-gradient(100deg, rgb(var(--accent2)), rgb(var(--ink)) 45%, rgb(var(--accent2)));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -418,14 +519,14 @@ select option {
 
 /* Big hero headline: white to gold wash. */
 .text-hero-gradient {
-  background-image: linear-gradient(100deg, #ffffff 8%, #f5edea 42%, #e2b54a 100%);
+  background-image: linear-gradient(100deg, rgb(var(--ink)) 8%, rgb(var(--muted)) 42%, rgb(var(--accent2)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .text-crimson-gradient {
-  background-image: linear-gradient(100deg, #ff5a6a, #c1121f 55%, #7a0000);
+  background-image: linear-gradient(100deg, rgb(var(--accent2)), rgb(var(--accent)) 55%, rgb(var(--primary-deep)));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
