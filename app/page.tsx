@@ -95,10 +95,12 @@ export default async function HomePage() {
           </div>
           <div className="relative grid w-full items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:px-14">
             <div className="max-w-2xl">
-              <GlassBadge className="border-white/25 bg-white/10 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
-                <Sparkles size={13} aria-hidden="true" className="text-accent2" />
-                {saleBanner}
-              </GlassBadge>
+              {onSaleProducts.length > 0 ? (
+                <GlassBadge className="origin-left scale-[1.2] motion-safe:animate-pulse border-white/25 bg-white/10 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
+                  <Sparkles size={16} aria-hidden="true" className="text-accent2" />
+                  {saleBanner}
+                </GlassBadge>
+              ) : null}
 
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.03] tracking-tight text-hero-gradient sm:text-6xl lg:text-7xl">
               {content.home.hero.headlineLines.map((line, index) => (
@@ -393,20 +395,31 @@ export default async function HomePage() {
       <section className="px-4 py-24">
         <div className="mx-auto w-full max-w-4xl">
           <Reveal>
-            <GlassCard padding="lg">
-              <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
-                {content.home.founder.heading}
-              </p>
-              <div className="mt-5 space-y-4">
-                {content.ceoMessage.map((paragraph) => (
-                  <p key={paragraph} className="text-sm leading-relaxed text-muted">
-                  {paragraph}
-                  </p>
-                ))}
+            <GlassCard padding="none" className="grid overflow-hidden md:grid-cols-[240px_1fr]">
+              <div className="relative min-h-[280px] md:min-h-full">
+                <Image
+                  src="/assets/brand/ceo.jpg"
+                  alt={content.home.founder.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 240px"
+                  className="object-cover object-top"
+                />
               </div>
-              <div className="mt-6 border-t border-line/10 pt-5">
-                <p className="text-sm font-semibold text-ink">{content.home.founder.name}</p>
-                <p className="text-xs text-muted">{content.home.founder.role}</p>
+              <div className="p-6 sm:p-8">
+                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
+                  {content.home.founder.heading}
+                </p>
+                <div className="mt-5 space-y-4">
+                  {content.ceoMessage.map((paragraph) => (
+                    <p key={paragraph} className="text-sm leading-relaxed text-muted">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+                <div className="mt-6 border-t border-line/10 pt-5">
+                  <p className="text-sm font-semibold text-ink">{content.home.founder.name}</p>
+                  <p className="text-xs text-muted">{content.home.founder.role}</p>
+                </div>
               </div>
             </GlassCard>
           </Reveal>

@@ -31,6 +31,7 @@ export function generateMetadata(): Metadata {
       description: content.home.hero.text,
       siteName: BRAND_SETTINGS.businessName,
       type: "website",
+      images: ["/assets/brand/alhaq-farms-logo.jpg"],
       ...(SITE_URL ? { url: SITE_URL.href } : {}),
     },
     twitter: {
@@ -39,7 +40,8 @@ export function generateMetadata(): Metadata {
       description: content.home.hero.text,
     },
     icons: {
-      icon: "/assets/default/alhaq-farms-icon.svg",
+      icon: "/assets/brand/alhaq-farms-icon.png",
+      apple: "/assets/brand/alhaq-farms-icon.png",
     },
   };
 }

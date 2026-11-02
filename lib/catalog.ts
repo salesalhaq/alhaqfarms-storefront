@@ -296,9 +296,15 @@ function getSampleCatalogSnapshot(requestedBranchId?: string): CatalogSnapshot {
   const branchId = SAMPLE_BRANCHES.some((branch) => branch.id === requestedBranchId)
     ? requestedBranchId!
     : defaultBranchId();
+  const categories = mapCategories(SAMPLE_CATEGORIES);
+  const categoryIds = new Set(categories.map((category) => category.id));
   return {
-    products: sampleProducts(branchId),
-    categories: SAMPLE_CATEGORIES,
+    products: sampleProducts(branchId).filter(
+      (product) =>
+        isStorefrontCategory(product.categoryName) &&
+        (!product.categoryId || categoryIds.has(product.categoryId))
+    ),
+    categories,
     branches: SAMPLE_BRANCHES,
     branchId,
     isSample: true,
@@ -314,11 +320,17 @@ function isMissingStorefrontView(error: { code?: string; message: string }): boo
 }
 
 function mapCategories(rows: CategoryRow[]): Category[] {
-  return rows.map((category) => ({
-    id: category.id,
-    name: category.name,
-    description: category.description,
-  }));
+  return rows
+    .filter((category) => isStorefrontCategory(category.name))
+    .map((category) => ({
+      id: category.id,
+      name: category.name,
+      description: category.description,
+    }));
+}
+
+function isStorefrontCategory(name: string | null | undefined): boolean {
+  return !name?.trim().toLowerCase().startsWith("raw");
 }
 
 export async function getStorefrontCategories(): Promise<Category[]> {
@@ -424,7 +436,13 @@ export async function getCatalogSnapshot(requestedBranchId?: string): Promise<Ca
     phone: branch.phone,
     isDefault: branch.is_default,
   }));
-  const categories = mapCategories(categoryResult.data as CategoryRow[]);
+  const categoryRows = categoryResult.data as CategoryRow[];
+  const hiddenCategoryIds = new Set(
+    categoryRows
+      .filter((category) => !isStorefrontCategory(category.name))
+      .map((category) => category.id)
+  );
+  const categories = mapCategories(categoryRows);
   const branchId =
     branches.find((branch) => branch.id === requestedBranchId)?.id ??
     branches.find((branch) => branch.isDefault)?.id ??
@@ -445,6 +463,11 @@ export async function getCatalogSnapshot(requestedBranchId?: string): Promise<Ca
   );
   const products = (productResult.data as ProductCatalogRow[])
     .filter((product) => product.is_active)
+    .filter(
+      (product) =>
+        !hiddenCategoryIds.has(product.category_id ?? "") &&
+        isStorefrontCategory(product.category_name)
+    )
     .map((product) => configuredProduct(product, stockByProduct.get(product.id) ?? 0));
 
   return { products, categories, branches, branchId, isSample: false };

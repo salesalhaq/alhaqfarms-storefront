@@ -32,7 +32,7 @@ export const BRAND_SETTINGS: BrandSettings = {
   email: "info@alhaqfarms.com.pk",
   website: "https://www.alhaqfarms.com.pk",
   whatsapp: "923333867073",
-  logoUrl: null,
+  logoUrl: "/assets/brand/alhaq-farms-icon.png",
   accentColor: null,
   themeId: "garnet",
 };

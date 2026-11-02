@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Download, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
-import { BrandMark } from "@/components/ui/BrandMark";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { InstallPwaButton } from "@/components/ui/InstallPwaButton";
 import { content, navigation } from "@/content/site";
@@ -23,13 +23,15 @@ export async function Footer({ brand }: FooterProps) {
       <GlassCard padding="lg" className="mx-auto w-full max-w-6xl">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_1.1fr_0.95fr] lg:gap-10">
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <BrandMark brand={brand} size={38} />
-              <div className="leading-tight">
-                <p className="text-base font-semibold text-ink">{brand.businessName}</p>
-                <p className="text-xs text-muted">{brand.tagline}</p>
-              </div>
-            </div>
+            <Link href="/" aria-label={brand.businessName} className="inline-flex">
+              <Image
+                src="/assets/brand/alhaq-farms-logo.jpg"
+                alt="Al Haq Farms & Meats — Pure, Fresh, Hygiene"
+                width={160}
+                height={164}
+                className="h-28 w-28 rounded-glass-sm bg-white object-contain p-1"
+              />
+            </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">{content.footer.about}</p>
           </div>
 
