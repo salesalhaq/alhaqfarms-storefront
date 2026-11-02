@@ -5,10 +5,10 @@
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var d=document.documentElement;
-var glass=localStorage.getItem('sf:glass')||'palette-15-first';
+var glass=localStorage.getItem('sf:glass')||'palette-14-last';
 var effects=localStorage.getItem('sf:effects')||'full';
-var themes=['palette-13-first','palette-13-last','palette-14-first','palette-14-last','palette-15-first','palette-15-last','palette-16-first','palette-16-last'];
-if(themes.indexOf(glass)===-1){glass='palette-15-first';}
+var themes=['palette-13-first','palette-13-last','palette-14-last','palette-15-first','palette-15-second','palette-16-first','palette-16-last'];
+if(themes.indexOf(glass)===-1){glass='palette-14-last';}
 d.setAttribute('data-mode','dark');
 d.setAttribute('data-glass',glass);
 var low=false;

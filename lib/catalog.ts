@@ -16,36 +16,43 @@ export const SAMPLE_CATEGORIES: Category[] = [
     id: "cat-meat",
     name: "Premium Meats",
     description: "Beef and mutton, cut to order and packed hygienically.",
+    imagePath: null,
   },
   {
     id: "cat-poultry",
     name: "Fresh Poultry",
     description: "Chicken and eggs from partner farms, delivered fresh.",
+    imagePath: null,
   },
   {
     id: "cat-dairy",
     name: "Farm Dairy",
     description: "Milk, yogurt and butter from our own herd.",
+    imagePath: null,
   },
   {
     id: "cat-spices",
     name: "Authentic Spices",
     description: "Authentic seasonings and ground spice powders.",
+    imagePath: null,
   },
   {
     id: "cat-marinated",
     name: "Marinated Items",
     description: "Ready-to-cook items prepared for your convenience.",
+    imagePath: null,
   },
   {
     id: "cat-vegetables",
     name: "Farm Vegetables",
     description: "Daily collected fresh produce direct from our farm.",
+    imagePath: null,
   },
   {
     id: "cat-ready",
     name: "Ready to Eat",
     description: "Fully cooked, hygienic meal options for instant enjoyment.",
+    imagePath: null,
   },
 ];
 
@@ -268,6 +275,7 @@ interface CategoryRow {
   id: string;
   name: string;
   description: string | null;
+  image_path?: string | null;
 }
 
 interface BranchRow {
@@ -296,7 +304,7 @@ function getSampleCatalogSnapshot(requestedBranchId?: string): CatalogSnapshot {
   const branchId = SAMPLE_BRANCHES.some((branch) => branch.id === requestedBranchId)
     ? requestedBranchId!
     : defaultBranchId();
-  const categories = mapCategories(SAMPLE_CATEGORIES);
+  const categories = SAMPLE_CATEGORIES;
   const categoryIds = new Set(categories.map((category) => category.id));
   return {
     products: sampleProducts(branchId).filter(
@@ -319,6 +327,13 @@ function isMissingStorefrontView(error: { code?: string; message: string }): boo
   );
 }
 
+function isMissingCategoryImageColumn(error: { code?: string; message: string }): boolean {
+  return (
+    (error.code === "42703" || error.code === "PGRST204") &&
+    error.message.toLowerCase().includes("image_path")
+  );
+}
+
 function mapCategories(rows: CategoryRow[]): Category[] {
   return rows
     .filter((category) => isStorefrontCategory(category.name))
@@ -326,6 +341,7 @@ function mapCategories(rows: CategoryRow[]): Category[] {
       id: category.id,
       name: category.name,
       description: category.description,
+      imagePath: category.image_path ?? null,
     }));
 }
 
@@ -339,12 +355,27 @@ export async function getStorefrontCategories(): Promise<Category[]> {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Supabase is configured but its client is unavailable.");
 
-  const categoryResult = await supabase
+  const imageCategoryResult = await supabase
     .schema("storefront")
     .from("storefront_categories_view")
-    .select("id,name,description")
+    .select("id,name,description,image_path")
     .order("sort_order")
     .order("name");
+
+  const categoryResult = imageCategoryResult.error && isMissingCategoryImageColumn(imageCategoryResult.error)
+    ? await supabase
+      .schema("storefront")
+      .from("storefront_categories_view")
+      .select("id,name,description")
+      .order("sort_order")
+      .order("name")
+    : imageCategoryResult;
+
+  if (imageCategoryResult.error && isMissingCategoryImageColumn(imageCategoryResult.error)) {
+    console.warn(
+      "Supabase category image migration is not applied; categories will display without images until 202611020001_category_images.sql is applied."
+    );
+  }
 
   if (categoryResult.error) {
     if (isMissingStorefrontView(categoryResult.error) && process.env.NODE_ENV === "development") {
@@ -399,11 +430,22 @@ export async function getCatalogSnapshot(requestedBranchId?: string): Promise<Ca
       .select("id,code,name,address,phone,is_default")
       .order("is_default", { ascending: false })
       .order("name"),
-    storefront
-      .from("storefront_categories_view")
-      .select("id,name,description")
-      .order("sort_order")
-      .order("name"),
+    (async () => {
+      const result = await storefront
+        .from("storefront_categories_view")
+        .select("id,name,description,image_path")
+        .order("sort_order")
+        .order("name");
+      if (!result.error || !isMissingCategoryImageColumn(result.error)) return result;
+      console.warn(
+        "Supabase category image migration is not applied; categories will display without images until 202611020001_category_images.sql is applied."
+      );
+      return storefront
+        .from("storefront_categories_view")
+        .select("id,name,description")
+        .order("sort_order")
+        .order("name");
+    })(),
     storefront
       .from("product_catalog_view")
       .select(

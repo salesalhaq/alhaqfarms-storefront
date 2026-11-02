@@ -22,7 +22,7 @@ const STORAGE = {
 } as const;
 
 const DEFAULT_MODE: ColorMode = "light";
-const DEFAULT_GLASS: GlassTheme = "palette-15-first";
+const DEFAULT_GLASS: GlassTheme = "palette-14-last";
 const DEFAULT_EFFECTS: EffectsMode = "full";
 
 interface ThemeContextValue {

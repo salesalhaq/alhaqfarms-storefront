@@ -34,6 +34,7 @@ export interface Category {
   id: string;
   name: string;
   description: string | null;
+  imagePath: string | null;
 }
 
 export interface Branch {

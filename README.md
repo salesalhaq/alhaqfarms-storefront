@@ -78,7 +78,10 @@ Supabase configuration and review:
 - Storefront migrations `002`–`008` are implemented in `supabase/migrations/`.
   Apply them to the shared Supabase project, review the shared
   `public.web_orders` changes against the desktop app, then expose the
-  `storefront` schema in Supabase Project Settings → API.
+  `storefront` schema in Supabase Project Settings → API. Apply
+  [`202611020001_category_images.sql`](./supabase/migrations/202611020001_category_images.sql)
+  after the desktop app has category image sync enabled to expose
+  `categories.image_path` to the storefront.
 - Configure storefront delivery areas, COD rules, payment accounts, private
   receipt storage, Supabase credentials, Cloudflare Turnstile, and server-only
   secrets before accepting real orders.

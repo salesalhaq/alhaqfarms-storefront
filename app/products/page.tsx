@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { buttonStyles } from "@/components/ui/GlassButton";
@@ -61,20 +62,30 @@ export default async function ProductsPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {groups.map(({ category, items }, index) => (
                 <Reveal key={category.id} delay={index * 70} className="h-full">
-                  <GlassCard interactive={items.length > 0} padding="lg" className="flex h-full flex-col">
-                    <div className="flex items-start justify-between gap-3">
-                      <span
-                        aria-hidden="true"
-                        className="grid h-14 w-14 place-items-center rounded-glass-sm bg-gradient-to-br from-accent to-accent2 text-xl font-bold text-on-accent"
-                      >
-                        {category.name.charAt(0)}
-                      </span>
-                      <span className="chip">
+                  <GlassCard interactive={items.length > 0} padding="md" className="flex h-full flex-col">
+                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-glass-sm bg-gradient-to-br from-accent/25 via-bg-elevated to-accent2/20">
+                      {category.imagePath ? (
+                        <Image
+                          src={category.imagePath}
+                          alt={category.name}
+                          fill
+                          unoptimized
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 grid place-items-center text-4xl font-bold text-accent"
+                        >
+                          {category.name.charAt(0)}
+                        </span>
+                      )}
+                      <span className="absolute right-3 top-3 chip">
                         {items.length} item{items.length === 1 ? "" : "s"}
                       </span>
                     </div>
-
-                    <h3 className="mt-5 text-base font-semibold text-ink">{category.name}</h3>
+                    <h3 className="text-base font-semibold text-ink">{category.name}</h3>
                     {category.description ? (
                       <p className="mt-2 text-sm leading-relaxed text-muted">
                         {category.description}

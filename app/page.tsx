@@ -248,14 +248,27 @@ export default async function HomePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {catalog.categories.map((category, index) => (
               <Reveal key={category.id} delay={index * 70} className="h-full">
-                <Link href={`/shop?category=${category.id}`} className="block h-full">
-                  <GlassCard interactive padding="lg" className="h-full">
-                    <span
-                      aria-hidden="true"
-                      className="grid h-14 w-14 place-items-center rounded-glass-sm bg-gradient-to-br from-accent to-accent2 text-xl font-bold text-on-accent"
-                    >
-                      {category.name.charAt(0)}
-                    </span>
+                <Link href={`/shop?category=${category.id}`} className="group block h-full">
+                  <GlassCard interactive padding="md" className="h-full">
+                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-glass-sm bg-gradient-to-br from-accent/25 via-bg-elevated to-accent2/20">
+                      {category.imagePath ? (
+                        <Image
+                          src={category.imagePath}
+                          alt={category.name}
+                          fill
+                          unoptimized
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 grid place-items-center text-4xl font-bold text-accent"
+                        >
+                          {category.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="mt-5 text-base font-semibold text-ink">{category.name}</h3>
                     {category.description ? (
                       <p className="mt-2 text-sm leading-relaxed text-muted">

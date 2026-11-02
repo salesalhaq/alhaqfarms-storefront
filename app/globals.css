@@ -42,55 +42,38 @@
 
 /* Palette themes update the page, glass, borders, text and ambient effects. */
 html[data-glass="palette-13-first"] {
-  --canvas: 36 27 37;
-  --surface: 168 103 161;
-  --ink: 227 211 211;
-  --muted: 227 211 211;
-  --line: 227 211 211;
-  --scrim: 36 27 37;
-  --glass-fill: 214 155 201;
-  --accent: 168 103 161;
-  --accent2: 214 155 201;
-  --on-accent: 20 13 22;
+  --canvas: 77 58 77;
+  --surface: 184 92 168;
+  --ink: 235 216 218;
+  --muted: 235 216 218;
+  --line: 235 216 218;
+  --scrim: 77 58 77;
+  --glass-fill: 212 158 194;
+  --accent: 184 92 168;
+  --accent2: 212 158 194;
+  --on-accent: 255 255 255;
   --primary-deep: 77 58 77;
-  --aurora-1: 168 103 161;
-  --aurora-2: 214 155 201;
+  --aurora-1: 184 92 168;
+  --aurora-2: 212 158 194;
   --aurora-3: 77 58 77;
-  --aurora-4: 227 211 211;
+  --aurora-4: 235 216 218;
 }
 html[data-glass="palette-13-last"] {
-  --canvas: 254 213 23;
-  --surface: 54 153 70;
-  --ink: 1 31 65;
-  --muted: 1 31 65;
-  --line: 1 31 65;
-  --scrim: 254 213 23;
-  --glass-fill: 6 54 90;
-  --accent: 54 153 70;
-  --accent2: 6 54 90;
-  --on-accent: 15 31 16;
-  --primary-deep: 254 213 23;
-  --aurora-1: 254 213 23;
-  --aurora-2: 54 153 70;
-  --aurora-3: 6 54 90;
-  --aurora-4: 1 31 65;
-}
-html[data-glass="palette-14-first"] {
-  --canvas: 55 70 103;
-  --surface: 27 177 212;
-  --ink: 255 255 255;
-  --muted: 255 255 255;
-  --line: 255 255 255;
-  --scrim: 55 70 103;
-  --glass-fill: 252 208 51;
-  --accent: 27 177 212;
-  --accent2: 252 208 51;
-  --on-accent: 3 35 46;
-  --primary-deep: 55 70 103;
-  --aurora-1: 27 177 212;
-  --aurora-2: 252 208 51;
-  --aurora-3: 55 70 103;
-  --aurora-4: 247 53 88;
+  --canvas: 254 213 25;
+  --surface: 13 166 120;
+  --ink: 1 30 62;
+  --muted: 1 30 62;
+  --line: 1 30 62;
+  --scrim: 254 213 25;
+  --glass-fill: 7 51 88;
+  --accent: 13 166 120;
+  --accent2: 7 51 88;
+  --on-accent: 1 30 62;
+  --primary-deep: 254 213 25;
+  --aurora-1: 254 213 25;
+  --aurora-2: 13 166 120;
+  --aurora-3: 7 51 88;
+  --aurora-4: 1 30 62;
 }
 html[data-glass="palette-14-last"] {
   --canvas: 255 245 244;
@@ -103,45 +86,45 @@ html[data-glass="palette-14-last"] {
   --accent: 177 212 56;
   --accent2: 21 140 162;
   --on-accent: 19 36 16;
-  --primary-deep: 255 245 244;
+  --primary-deep: 21 140 162;
   --aurora-1: 177 212 56;
   --aurora-2: 21 140 162;
   --aurora-3: 255 245 244;
   --aurora-4: 0 0 0;
 }
 html[data-glass="palette-15-first"] {
-  --canvas: 24 32 55;
+  --canvas: 26 38 62;
   --surface: 76 84 107;
   --ink: 216 216 216;
   --muted: 216 216 216;
   --line: 216 216 216;
-  --scrim: 24 32 55;
-  --glass-fill: 190 55 33;
+  --scrim: 26 38 62;
+  --glass-fill: 194 64 45;
   --accent: 76 84 107;
-  --accent2: 190 55 33;
+  --accent2: 194 64 45;
   --on-accent: 255 255 255;
   --primary-deep: 76 84 107;
   --aurora-1: 76 84 107;
-  --aurora-2: 190 55 33;
-  --aurora-3: 24 32 55;
+  --aurora-2: 194 64 45;
+  --aurora-3: 26 38 62;
   --aurora-4: 216 216 216;
 }
-html[data-glass="palette-15-last"] {
-  --canvas: 154 100 196;
-  --surface: 8 155 149;
-  --ink: 20 12 30;
-  --muted: 20 12 30;
-  --line: 20 12 30;
-  --scrim: 154 100 196;
-  --glass-fill: 20 206 165;
-  --accent: 8 155 149;
-  --accent2: 20 206 165;
-  --on-accent: 3 35 33;
-  --primary-deep: 154 100 196;
-  --aurora-1: 8 155 149;
-  --aurora-2: 20 206 165;
-  --aurora-3: 154 100 196;
-  --aurora-4: 20 12 30;
+html[data-glass="palette-15-second"] {
+  --canvas: 250 255 163;
+  --surface: 197 232 116;
+  --ink: 6 56 53;
+  --muted: 6 56 53;
+  --line: 6 56 53;
+  --scrim: 250 255 163;
+  --glass-fill: 106 211 129;
+  --accent: 197 232 116;
+  --accent2: 106 211 129;
+  --on-accent: 6 56 53;
+  --primary-deep: 250 255 163;
+  --aurora-1: 197 232 116;
+  --aurora-2: 106 211 129;
+  --aurora-3: 250 255 163;
+  --aurora-4: 6 56 53;
 }
 html[data-glass="palette-16-first"] {
   --canvas: 228 223 217;
@@ -177,12 +160,21 @@ html[data-glass="palette-16-last"] {
   --aurora-3: 63 63 63;
   --aurora-4: 247 247 187;
 }
+html[data-glass="palette-16-first"] .glass,
+html[data-glass="palette-16-first"] .glass-line,
+html[data-glass="palette-16-first"] .glass-strong,
+html[data-glass="palette-16-first"] .glass-accent,
+html[data-glass="palette-16-first"] .glass-crimson,
+html[data-glass="palette-16-first"] .glass-gold {
+  color: #FFFFFF;
+}
 
 html {
   color-scheme: dark;
 }
 html[data-glass="palette-13-last"],
 html[data-glass="palette-14-last"],
+html[data-glass="palette-15-second"],
 html[data-glass="palette-16-first"] {
   color-scheme: light;
 }
