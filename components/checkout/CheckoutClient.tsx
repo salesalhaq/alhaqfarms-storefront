@@ -37,6 +37,11 @@ interface DeliverySetting {
   allowed_cities: string[];
   delivery_charge_paisa: number;
   free_delivery_threshold_paisa: number;
+  area_settings?: {
+    area_name: string;
+    delivery_charge_paisa: number;
+    free_delivery_threshold_paisa: number;
+  }[];
 }
 
 interface CodSetting {
@@ -219,6 +224,9 @@ export function CheckoutClient({
   const deliverySetting = deliverySettings.find((setting) => setting.branch_id === branchId);
   const codSetting = codSettings.find((setting) => setting.branch_id === branchId);
   const deliveryAreas = deliverySetting?.allowed_cities ?? EMPTY_CITIES;
+  const selectedDeliveryArea = deliverySetting?.area_settings?.find(
+    (area) => area.area_name.trim().toLocaleLowerCase() === deliveryArea.trim().toLocaleLowerCase()
+  );
   const estimatedSubtotalPaisa = items.reduce(
     (total, item) =>
       total + Math.round((item.pricePaisa * item.quantityMilli) / 1000),
@@ -228,9 +236,9 @@ export function CheckoutClient({
     fulfillmentType === "pickup"
       ? 0
       : deliverySetting && deliveryArea && deliveryAreas.includes(deliveryArea)
-        ? estimatedSubtotalPaisa >= deliverySetting.free_delivery_threshold_paisa
+        ? estimatedSubtotalPaisa >= (selectedDeliveryArea?.free_delivery_threshold_paisa ?? deliverySetting.free_delivery_threshold_paisa)
           ? 0
-          : deliverySetting.delivery_charge_paisa
+          : selectedDeliveryArea?.delivery_charge_paisa ?? deliverySetting.delivery_charge_paisa
         : null;
   const estimatedTotalPaisa =
     estimatedDeliveryChargePaisa === null

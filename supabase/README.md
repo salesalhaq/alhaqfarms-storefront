@@ -21,19 +21,21 @@ After those migrations, apply the tracked follow-on migrations in this order:
 
 1. **202611010001_customer_wishlist_order_history.sql** - Private customer wishlist and signed-in order association
 2. **202611010002_branch_delivery_areas.sql** - Branch-linked delivery-area records; backfills existing `allowed_cities` values
+3. **202611010003_hq_synced_checkout_settings.sql** - Migrates checkout settings to the desktop app's synced public tables
 
 ## Checkout prerequisites
 
 - Review and back up the existing Supabase schema before applying migrations.
 - Checkout and tracking need `002`–`008`, in numeric order.
-- Apply the two follow-on migrations above after `002`–`008`. The delivery-area migration uses the UUID primary key in `public.branches` and preserves the existing checkout view/API shape.
+- Apply the follow-on migrations above after `002`–`008`. The delivery-area migration uses the UUID primary key in `public.branches` and preserves the existing checkout view/API shape.
+- Before applying `202611010003_hq_synced_checkout_settings.sql`, apply the AlhaqFM app's forward migration `database/supabase/migrations/0023_storefront_checkout_settings.sql` to the shared project. Do not apply the desktop app's full `schema.sql` bundle to an existing project. Then apply migration `003`; it imports the existing area, COD, and payment settings, makes those public tables canonical, and keeps checkout RPCs compatible.
 - Add `storefront` to Supabase Project Settings → API → Exposed schemas after the migrations, then reload the API schema cache. The migrations grant schema usage but do not change dashboard exposure settings.
 - `005_web_order_creation_rpc.sql` creates a unique index on `web_orders.order_number`; check for existing duplicate order numbers before applying it.
 - The private `web-order-payment-proofs` Storage bucket must exist and remain private. The desktop app reads proofs from this bucket.
 - The server limits order attempts to five per phone hash and twenty per IP hash per hour, and quote requests to 120 per IP hash per hour. Only HMAC hashes are stored.
 - Order tracking is served through a server-only RPC and limited to 30 requests per IP hash per hour. Its response excludes customer name, phone, delivery address, payment reference, and internal event notes.
 - Configure at least one branch's delivery settings, eligible COD settings, and/or an enabled payment account. Options without active settings are not offered.
-- Delivery areas are stored in `storefront.storefront_delivery_areas`, linked to `public.branches.id`; existing branch area arrays are copied during migration. The `storefront_delivery_areas_hq_admin` RLS policy allows authenticated HQ admins to manage those rows.
+- Checkout settings are managed from the AlhaqFM app's HQ-only **Settings → Storefront checkout** tab and sync through its normal offline outbox. The `storefront` schema exposes safe checkout views and RPCs; the old settings tables are retained as read-only compatibility mirrors.
 - Configure Cloudflare Turnstile and server-only secrets in the storefront environment. Never put the Supabase service-role key or checkout hash secret in a browser variable.
 - Supabase tax preferences are local-only in the desktop app. The storefront uses each product's tax rate and the desktop-compatible inclusive, per-line calculation; non-default local tax preferences are not synchronized.
 

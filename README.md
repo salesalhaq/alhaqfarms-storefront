@@ -111,6 +111,16 @@ become available. Storefront reservations do not lock stock against
 simultaneous desktop POS sales; enforcing shared reservations requires a
 desktop-app change and is intentionally out of scope.
 
+The tracked
+[`supabase/migrations/202611010003_hq_synced_checkout_settings.sql`](./supabase/migrations/202611010003_hq_synced_checkout_settings.sql)
+migration moves delivery-area pricing, COD area eligibility, and payment
+accounts to synced public tables managed from the AlhaqFM app. Apply the
+desktop app's `database/supabase/migrations/0023_storefront_checkout_settings.sql`
+first (do not apply the desktop app's full `schema.sql` bundle to an existing
+project), then apply migration `003`; it backfills the existing storefront
+settings and keeps the checkout views and server-side validation compatible. Thereafter use the
+desktop app's HQ-only **Settings → Storefront checkout** tab to make changes.
+
 See [`supabase/README.md`](./supabase/README.md) for migration details.
 
 ## Shared Supabase architecture

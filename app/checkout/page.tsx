@@ -25,6 +25,11 @@ interface DeliverySettingRow {
   allowed_cities: string[];
   delivery_charge_paisa: number;
   free_delivery_threshold_paisa: number;
+  area_settings: {
+    area_name: string;
+    delivery_charge_paisa: number;
+    free_delivery_threshold_paisa: number;
+  }[];
 }
 
 interface CodSettingRow {
@@ -54,7 +59,7 @@ export default async function CheckoutPage() {
       supabase
         .schema("storefront")
         .from("storefront_delivery_settings_view")
-        .select("branch_id,allowed_cities,delivery_charge_paisa,free_delivery_threshold_paisa"),
+        .select("branch_id,allowed_cities,delivery_charge_paisa,free_delivery_threshold_paisa,area_settings"),
       supabase
         .schema("storefront")
         .from("storefront_cod_settings_view")
