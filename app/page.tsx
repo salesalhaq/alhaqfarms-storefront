@@ -6,7 +6,6 @@ import {
   Check,
   Clock,
   Leaf,
-  MessageCircle,
   ShieldCheck,
   Sparkles,
   Truck,
@@ -23,7 +22,6 @@ import { CatalogPreviewNotice } from "@/components/ui/CatalogPreviewNotice";
 import { content } from "@/content/site";
 import { filterAndSort, getCatalogSnapshot } from "@/lib/catalog";
 import { formatPaisa, unitLabel } from "@/lib/utils";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
 import type { CatalogFilters } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -52,8 +50,12 @@ export default async function HomePage() {
   };
 
   const bestSellers = filterAndSort(products, base).slice(0, 8);
-  const onSale = filterAndSort(products, { ...base, onSaleOnly: true }).slice(0, 4);
+  const onSaleProducts = filterAndSort(products, { ...base, onSaleOnly: true });
+  const onSale = onSaleProducts.slice(0, 4);
   const spotlight = onSale[0] ?? products[0];
+  const saleBanner = `FLASH SALE: ${onSaleProducts.length} ${
+    onSaleProducts.length === 1 ? "PRODUCT" : "PRODUCTS"
+  } ON SALE TODAY!`;
 
   const gridLabels = {
     sale: content.shop.labels.sale,
@@ -95,7 +97,7 @@ export default async function HomePage() {
             <div className="max-w-2xl">
               <GlassBadge className="border-white/25 bg-white/10 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
                 <Sparkles size={13} aria-hidden="true" className="text-accent2" />
-                {content.home.hero.saleBanner}
+                {saleBanner}
               </GlassBadge>
 
             <h1 className="mt-6 text-5xl font-extrabold leading-[1.03] tracking-tight text-hero-gradient sm:text-6xl lg:text-7xl">
@@ -122,24 +124,19 @@ export default async function HomePage() {
               {content.home.hero.text}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={whatsappLink(BRAND_SETTINGS.whatsapp, "Hi, I would like to place an order.")}
-                target="_blank"
-                rel="noreferrer"
-                className={buttonStyles("gold", "lg", "bg-accent2 text-ink shadow-[0_0_34px_rgb(226_181_74/0.45)] hover:brightness-110")}
+            <div className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+              <Link
+                href="/shop"
+                className={buttonStyles("primary", "lg", "w-full motion-safe:animate-pulse")}
               >
-                <MessageCircle size={18} aria-hidden="true" />
-                {content.home.hero.whatsappCta}
-              </a>
-              <Link href="/products" className={buttonStyles("glass", "lg", "border border-white/25 text-white")}>
+                {content.home.hero.primaryCta}
+                <ArrowRight size={18} aria-hidden="true" />
+              </Link>
+              <Link href="/products" className={buttonStyles("primary", "lg", "w-full")}>
                 {content.home.hero.priceListCta}
               </Link>
-              <Link href="/track" className={buttonStyles("ghost", "lg", "text-white/75 hover:bg-white/10 hover:text-white")}>
+              <Link href="/track" className={buttonStyles("primary", "lg", "w-full")}>
                 {content.home.hero.trackCta}
-              </Link>
-              <Link href="/contact" className={buttonStyles("ghost", "lg", "text-white/75 hover:bg-white/10 hover:text-white")}>
-                {content.home.hero.contactCta}
               </Link>
             </div>
 

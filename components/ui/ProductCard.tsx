@@ -118,17 +118,45 @@ export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) 
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
-        <div>
-          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent2/90">
-            {product.categoryName ?? ""}
-          </p>
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            {product.onSale ? (
-              <span className="rounded-full bg-accent px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-on-accent">
-                {labels.sale}
-              </span>
-            ) : null}
-            <h3 className="text-base font-semibold leading-snug text-ink">{product.name}</h3>
+        <div className="flex min-w-0 items-center gap-2.5">
+          {product.onSale ? (
+            <svg
+              viewBox="0 0 200 200"
+              role="img"
+              aria-label={labels.sale}
+              className="h-10 w-10 shrink-0 -rotate-6 drop-shadow-lg motion-safe:animate-pulse"
+            >
+              <path
+                d="M100 3 114 23 136 12 140 37 165 33 160 58 185 67 168 87 192 101 168 115 183 138 157 144 159 170 134 165 124 190 103 175 85 196 74 171 49 181 48 155 22 159 29 134 5 123 22 103 2 85 27 73 16 48 42 46 39 20 64 29 76 5 95 23Z"
+                fill="#dc2626"
+                stroke="#fff7ed"
+                strokeLinejoin="round"
+                strokeWidth="5"
+              />
+              <text
+                x="100"
+                y="111"
+                fill="#fff"
+                fontFamily="Georgia, serif"
+                fontSize="39"
+                fontStyle="italic"
+                fontWeight="bold"
+                textAnchor="middle"
+                paintOrder="stroke"
+                stroke="#991b1b"
+                strokeWidth="2"
+              >
+                Sale
+              </text>
+            </svg>
+          ) : null}
+          <div className="min-w-0">
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent2/90">
+              {product.categoryName ?? ""}
+            </p>
+            <h3 className="mt-1 line-clamp-1 text-base font-semibold leading-snug text-ink">
+              {product.name}
+            </h3>
           </div>
         </div>
 
@@ -164,7 +192,7 @@ export function ProductCard({ product, labels, onAddToCart }: ProductCardProps) 
             disabled={soldOut}
             aria-label={`${labels.addToCart}: ${product.name}`}
             onClick={() => onAddToCart(product)}
-            className="min-w-10 px-3"
+            className="min-w-10 shrink-0 px-3"
           >
             <ShoppingCart size={16} aria-hidden="true" />
             <span className="hidden sm:inline">{labels.addToCart}</span>

@@ -22,9 +22,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from localStorage on mount
+  // Load only this tab's cart and discard any cart saved by the previous persistent behavior.
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
     if (saved) {
       try {
         setItems(JSON.parse(saved));
@@ -35,10 +36,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsLoaded(true);
   }, []);
 
-  // Save to localStorage on change
+  // Keep the cart for this tab session without carrying it across browser restarts.
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
   }, [items, isLoaded]);
 

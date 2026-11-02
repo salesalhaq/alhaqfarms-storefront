@@ -13,12 +13,9 @@ export const content = {
     hero: {
       headlineLines: ["Pure.", "Fresh.", "Perfected."],
       text: "Bringing you the finest farm-to-table meats and dairy — clean, hygienic, and uncompromised.",
-      saleBanner: "Flash Sale: Products on Sale Today!",
       primaryCta: "Shop Now",
       secondaryCta: "Our Products",
       trackCta: "Track Order",
-      contactCta: "Contact Us",
-      whatsappCta: "Order on WhatsApp",
       priceListCta: "View Full Price List",
       chips: ["Fresh daily", "100% Halal", "Same-day delivery"],
     },

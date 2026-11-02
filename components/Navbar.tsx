@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRight,
   Clock,
   MapPin,
   Menu,
@@ -19,7 +20,7 @@ import { BrandMark } from "@/components/ui/BrandMark";
 import { ThemeMenu } from "@/components/theme/ThemeMenu";
 import { CartDrawer } from "@/components/shop/CartDrawer";
 import { buttonStyles } from "@/components/ui/GlassButton";
-import { cn } from "@/lib/utils";
+import { cn, formatPaisa } from "@/lib/utils";
 import { useCart } from "@/lib/store";
 import { navigation } from "@/content/site";
 import { BRAND_SETTINGS, type BrandSettings } from "@/lib/brand";
@@ -38,10 +39,11 @@ const INFO_ITEMS = [
 
 export function Navbar({ brand }: NavbarProps) {
   const pathname = usePathname();
-  const { items } = useCart();
+  const { items, subtotalPaisa } = useCart();
   const [open, setOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuAreaRef = useRef<HTMLDivElement>(null);
 
   const cartItemsCount = items.length;
   const isActive = (href: string) =>
@@ -53,6 +55,26 @@ export function Navbar({ brand }: NavbarProps) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!menuAreaRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -69,7 +91,7 @@ export function Navbar({ brand }: NavbarProps) {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-6xl px-4">
+      <div ref={menuAreaRef} className="mx-auto w-full max-w-6xl px-4">
         <nav
           aria-label="Primary"
           className={cn(
@@ -203,6 +225,38 @@ export function Navbar({ brand }: NavbarProps) {
           </div>
         ) : null}
       </div>
+      <AnimatePresence>
+        {cartItemsCount > 0 && (
+          <motion.button
+            key="floating-cart"
+            type="button"
+            aria-label={`Open cart, ${cartItemsCount} ${
+              cartItemsCount === 1 ? "item" : "items"
+            }, subtotal ${formatPaisa(subtotalPaisa)}`}
+            onClick={() => setCartOpen(true)}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.95 }}
+            whileTap={{ scale: 0.97 }}
+            className="fixed right-4 z-[55] flex min-h-14 items-center gap-3 rounded-full border border-accent2/35 bg-surface/95 px-4 text-left text-ink shadow-[0_12px_36px_rgb(0_0_0/0.4)] backdrop-blur-xl transition-colors hover:border-accent2/60 hover:bg-surface sm:right-6"
+            style={{ bottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}
+          >
+            <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent text-on-accent">
+              <ShoppingCart size={19} aria-hidden="true" />
+              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-accent2 px-1 text-[10px] font-bold text-canvas">
+                {cartItemsCount}
+              </span>
+            </span>
+            <span className="flex min-w-0 flex-col">
+              <span className="text-xs font-medium text-muted">
+                View cart · {cartItemsCount} {cartItemsCount === 1 ? "item" : "items"}
+              </span>
+              <span className="text-sm font-bold">{formatPaisa(subtotalPaisa)}</span>
+            </span>
+            <ArrowRight size={17} aria-hidden="true" className="ml-1 shrink-0 text-accent2" />
+          </motion.button>
+        )}
+      </AnimatePresence>
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
