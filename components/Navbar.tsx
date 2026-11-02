@@ -164,6 +164,13 @@ export function Navbar({ brand }: NavbarProps) {
                   )}
                 </button>
               </div>
+              <Link
+                href="/account"
+                aria-label="My account"
+                className={buttonStyles("ghost", "sm", "w-10 px-0 md:hidden")}
+              >
+                <UserRound size={18} aria-hidden="true" />
+              </Link>
               <button
                 type="button"
                 aria-expanded={open}
@@ -181,14 +188,6 @@ export function Navbar({ brand }: NavbarProps) {
           <div className="glass-strong mt-2 rounded-glass p-2 md:hidden">
             <div className="flex items-center gap-2 border-b border-line/10 px-2 pb-2">
               <ThemeMenu />
-              <Link
-                href="/account"
-                onClick={() => setOpen(false)}
-                aria-label="My account"
-                className={buttonStyles("ghost", "sm", "w-10 px-0")}
-              >
-                <UserRound size={18} aria-hidden="true" />
-              </Link>
               <button
                 type="button"
                 aria-label="Cart"

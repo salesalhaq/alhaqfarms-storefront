@@ -96,9 +96,9 @@ export default async function HomePage() {
           <div className="relative grid w-full items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:px-14">
             <div className="max-w-2xl">
               {onSaleProducts.length > 0 ? (
-                <GlassBadge className="origin-left scale-[1.2] motion-safe:animate-pulse border-white/25 bg-white/10 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
-                  <Sparkles size={16} aria-hidden="true" className="text-accent2" />
-                  {saleBanner}
+                <GlassBadge className="origin-left scale-[1.05] whitespace-normal border-yellow-200/80 bg-yellow-400 text-center text-yellow-950 shadow-[0_0_24px_rgb(250_204_21/0.45)] motion-safe:animate-pulse sm:scale-[1.2]">
+                  <Sparkles size={16} aria-hidden="true" className="shrink-0 text-yellow-800" />
+                  <span className="min-w-0 whitespace-normal text-left">{saleBanner}</span>
                 </GlassBadge>
               ) : null}
 

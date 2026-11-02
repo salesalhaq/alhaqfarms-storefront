@@ -55,7 +55,7 @@ export function ThemeMenu() {
           id={panelId}
           role="dialog"
           aria-label="Appearance settings"
-          className="glass-strong absolute right-0 top-12 z-50 w-64 rounded-glass p-4"
+          className="glass-strong absolute left-0 right-auto top-12 z-50 w-[min(16rem,calc(100vw-2rem))] rounded-glass p-4 md:left-auto md:right-0"
         >
           <fieldset>
             <legend className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted">
