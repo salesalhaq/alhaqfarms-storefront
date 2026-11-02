@@ -393,16 +393,16 @@ export default async function HomePage() {
 
       {/* Founder */}
       <section className="px-4 py-24">
-        <div className="mx-auto w-full max-w-4xl">
+        <div className="mx-auto w-full max-w-6xl">
           <Reveal>
-            <GlassCard padding="none" className="grid overflow-hidden md:grid-cols-[240px_1fr]">
-              <div className="relative min-h-[280px] md:min-h-full">
+            <GlassCard padding="none" className="grid overflow-hidden md:grid-cols-[minmax(300px,360px)_1fr]">
+              <div className="relative aspect-[350/378] bg-white md:aspect-auto md:min-h-full">
                 <Image
                   src="/assets/brand/ceo.jpg"
                   alt={content.home.founder.name}
                   fill
-                  sizes="(max-width: 768px) 100vw, 240px"
-                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 100vw, 360px"
+                  className="object-contain"
                 />
               </div>
               <div className="p-6 sm:p-8">

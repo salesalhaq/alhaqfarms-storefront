@@ -100,7 +100,7 @@ export function Navbar({ brand }: NavbarProps) {
           )}
         >
           <Link href="/" className="flex items-center gap-2.5 rounded-full pr-2" aria-label={brand.businessName}>
-            <BrandMark brand={brand} size={34} />
+            <BrandMark brand={brand} size={38} />
             <span className="flex flex-col leading-tight">
               <span className="text-sm font-semibold text-ink">{brand.businessName}</span>
               <span className="hidden text-[0.6875rem] text-muted sm:block">{brand.tagline}</span>

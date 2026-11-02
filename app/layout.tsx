@@ -40,8 +40,19 @@ export function generateMetadata(): Metadata {
       description: content.home.hero.text,
     },
     icons: {
-      icon: "/assets/brand/alhaq-farms-icon.png",
-      apple: "/assets/brand/alhaq-farms-icon.png",
+      icon: [
+        {
+          url: "/assets/brand/alhaq-farms-icon-32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/brand/alhaq-farms-icon-192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+      ],
+      apple: "/assets/brand/alhaq-farms-icon-180.png",
     },
   };
 }

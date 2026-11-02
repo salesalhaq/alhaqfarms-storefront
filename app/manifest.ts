@@ -11,6 +11,12 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#a20d19",
     icons: [
       {
+        src: "/assets/brand/alhaq-farms-icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
         src: "/assets/brand/alhaq-farms-icon.png",
         sizes: "512x512",
         type: "image/png",
