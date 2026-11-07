@@ -22,6 +22,7 @@ After those migrations, apply the tracked follow-on migrations in this order:
 1. **202611010001_customer_wishlist_order_history.sql** - Private customer wishlist and signed-in order association
 2. **202611010002_branch_delivery_areas.sql** - Branch-linked delivery-area records; backfills existing `allowed_cities` values
 3. **202611010003_hq_synced_checkout_settings.sql** - Migrates checkout settings to the desktop app's synced public tables
+4. **202611070001_customer_order_history_rpc.sql** - Secure server-only order history access without exposing order tables
 
 ## Checkout prerequisites
 
@@ -30,6 +31,7 @@ After those migrations, apply the tracked follow-on migrations in this order:
 - Apply the follow-on migrations above after `002`–`008`. The delivery-area migration uses the UUID primary key in `public.branches` and preserves the existing checkout view/API shape.
 - Before applying `202611010003_hq_synced_checkout_settings.sql`, apply the AlhaqFM app's forward migration `database/supabase/migrations/0023_storefront_checkout_settings.sql` to the shared project. Do not apply the desktop app's full `schema.sql` bundle to an existing project. Then apply migration `003`; it imports the existing area, COD, and payment settings, makes those public tables canonical, and keeps checkout RPCs compatible.
 - Add `storefront` to Supabase Project Settings → API → Exposed schemas after the migrations, then reload the API schema cache. The migrations grant schema usage but do not change dashboard exposure settings.
+- Apply `202611070001_customer_order_history_rpc.sql` after the customer order-association migration. In Project Settings → API → Exposed functions, enable only `storefront.storefront_customer_order_history` for the order-history endpoint; do not expose `public.web_orders` or `public.web_order_items` just to make order history work. The function is executable only by `service_role`, which the storefront keeps server-side.
 - `005_web_order_creation_rpc.sql` creates a unique index on `web_orders.order_number`; check for existing duplicate order numbers before applying it.
 - The private `web-order-payment-proofs` Storage bucket must exist and remain private. The desktop app reads proofs from this bucket.
 - The server limits order attempts to five per phone hash and twenty per IP hash per hour, and quote requests to 120 per IP hash per hour. Only HMAC hashes are stored.

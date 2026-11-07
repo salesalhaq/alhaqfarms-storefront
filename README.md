@@ -103,6 +103,12 @@ a private per-user wishlist and associates only newly placed, signed-in
 storefront orders with their Supabase Auth user. Existing guest orders and the
 desktop app's receivables customer records are not automatically linked.
 
+Order history also uses the server-only
+[`supabase/migrations/202611070001_customer_order_history_rpc.sql`](./supabase/migrations/202611070001_customer_order_history_rpc.sql)
+RPC. Apply it after the customer association migration and expose only this
+function in the Supabase Data API; the storefront does not require the order
+tables themselves to be exposed.
+
 The tracked
 [`supabase/migrations/202611010002_branch_delivery_areas.sql`](./supabase/migrations/202611010002_branch_delivery_areas.sql)
 migration creates branch-linked delivery-area records using the shared
