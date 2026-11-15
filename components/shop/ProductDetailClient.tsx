@@ -14,7 +14,8 @@ import { Toast } from "@/components/ui/Toast";
 import { useCart } from "@/lib/store";
 import { formatPaisa, unitLabel, quantityStep, toDecimalQuantity, cn } from "@/lib/utils";
 import { content } from "@/content/site";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
+import { whatsappLink } from "@/lib/brand";
+import { useBrand } from "@/components/BrandProvider";
 import type { Product } from "@/lib/types";
 
 interface ProductDetailClientProps {
@@ -23,6 +24,7 @@ interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
+  const brand = useBrand();
   const { addItem } = useCart();
   const [quantityMilli, setQuantityMilli] = useState(quantityStep(product.unitCode) * 1000);
   const [notice, setNotice] = useState<string | null>(null);
@@ -155,7 +157,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
               </p>
               <a
                 href={whatsappLink(
-                  BRAND_SETTINGS.whatsapp,
+                  brand.whatsapp,
                   `Hi! I'd like to order ${toDecimalQuantity(quantityMilli)} ${product.unitCode} of ${product.name}.`
                 )}
                 target="_blank"

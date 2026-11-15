@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { AccountPanel } from "@/components/account/AccountPanel";
+import { getBrandSettings } from "@/lib/brand-server";
 
-export const metadata: Metadata = {
-  title: "My account",
-  description: "Manage your Al-Haq Farms account and saved delivery details.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrandSettings();
+  return {
+    title: "My account",
+    description: `Manage your ${brand.businessName} account and saved delivery details.`,
+  };
+}
 
 export default function AccountPage() {
   return (

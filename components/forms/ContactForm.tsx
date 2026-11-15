@@ -3,8 +3,9 @@
 import { useState, type FormEvent } from "react";
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { GlassButton } from "@/components/ui/GlassButton";
+import { useBrand } from "@/components/BrandProvider";
 import { content } from "@/content/site";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
+import { whatsappLink } from "@/lib/brand";
 
 const FIELD =
   "glass-line w-full rounded-full px-4 py-3 text-sm text-ink placeholder:text-muted transition-colors focus:border-accent2/60 focus-visible:outline-none";
@@ -14,13 +15,14 @@ const AREA =
 const [NAME, EMAIL, PHONE, SUBJECT, MESSAGE] = content.contact.form.fields;
 
 export function ContactForm() {
+  const brand = useBrand();
   const [whatsappMessage, setWhatsappMessage] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const lines = [
-      `Hello Al Haq Farms & Meats,`,
+      `Hello ${brand.businessName},`,
       `Name: ${String(formData.get("name") ?? "").trim()}`,
       `Email: ${String(formData.get("email") ?? "").trim()}`,
       formData.get("phone") ? `Phone: ${String(formData.get("phone")).trim()}` : "",
@@ -43,7 +45,7 @@ export function ContactForm() {
           Continue to WhatsApp and press Send there. Your message has not been sent yet.
         </p>
         <a
-          href={whatsappLink(BRAND_SETTINGS.whatsapp, whatsappMessage)}
+          href={whatsappLink(brand.whatsapp, whatsappMessage)}
           target="_blank"
           rel="noreferrer"
           className="mt-2 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-on-accent"

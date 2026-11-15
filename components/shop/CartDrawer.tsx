@@ -10,7 +10,8 @@ import { GlassButton, buttonStyles } from "@/components/ui/GlassButton";
 import { QuantitySelector } from "@/components/shop/QuantitySelector";
 import { useCart } from "@/lib/store";
 import { formatPaisa, toDecimalQuantity } from "@/lib/utils";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
+import { whatsappLink } from "@/lib/brand";
+import { useBrand } from "@/components/BrandProvider";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const brand = useBrand();
   const { items, removeItem, updateQuantity, subtotalPaisa } = useCart();
 
   // Prevent scroll when drawer is open
@@ -175,7 +177,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                   <a
                     href={whatsappLink(
-                      BRAND_SETTINGS.whatsapp,
+                      brand.whatsapp,
                       `Hi! I would like to order: ${items
                         .map((item) => `${toDecimalQuantity(item.quantityMilli)} ${item.unitCode} ${item.name}`)
                         .join(", ")}. Subtotal ${formatPaisa(subtotalPaisa)}.`

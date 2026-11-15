@@ -23,19 +23,11 @@ import { buttonStyles } from "@/components/ui/GlassButton";
 import { cn, formatPaisa } from "@/lib/utils";
 import { useCart } from "@/lib/store";
 import { navigation } from "@/content/site";
-import { BRAND_SETTINGS, type BrandSettings } from "@/lib/brand";
+import type { BrandSettings } from "@/lib/brand";
 
 interface NavbarProps {
   brand: BrandSettings;
 }
-
-const INFO_ITEMS = [
-  { Icon: Phone, label: BRAND_SETTINGS.phone },
-  { Icon: MapPin, label: BRAND_SETTINGS.address },
-  { Icon: ShieldCheck, label: "100% Halal Certified" },
-  { Icon: Clock, label: "9am – 10pm Daily" },
-  { Icon: Truck, label: "Same-day delivery" },
-];
 
 export function Navbar({ brand }: NavbarProps) {
   const pathname = usePathname();
@@ -48,6 +40,14 @@ export function Navbar({ brand }: NavbarProps) {
   const cartItemsCount = items.length;
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const infoItems = [
+    brand.phone ? { Icon: Phone, label: brand.phone } : null,
+    brand.address ? { Icon: MapPin, label: brand.address } : null,
+    { Icon: ShieldCheck, label: "100% Halal Certified" },
+    { Icon: Clock, label: "9am – 10pm Daily" },
+    { Icon: Truck, label: "Same-day delivery" },
+  ].filter((item): item is { Icon: typeof Phone; label: string } => item !== null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -81,7 +81,7 @@ export function Navbar({ brand }: NavbarProps) {
       <div className="glass-line hidden border-x-0 border-t-0 py-1.5 lg:block">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 text-[0.6875rem] text-muted">
           <div className="flex items-center gap-5">
-            {INFO_ITEMS.map((item) => (
+            {infoItems.map((item) => (
               <span key={item.label} className="flex items-center gap-1.5">
                 <item.Icon size={13} aria-hidden="true" className="text-accent2" />
                 {item.label}
@@ -157,7 +157,7 @@ export function Navbar({ brand }: NavbarProps) {
                       initial={{ scale: 0.4 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 520, damping: 16 }}
-                      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-on-accent shadow-[0_0_12px_rgb(193_18_31/0.7)]"
+                      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-on-accent shadow-[0_0_12px_rgb(var(--accent)/0.7)]"
                     >
                       {cartItemsCount}
                     </motion.span>

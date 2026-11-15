@@ -1,25 +1,36 @@
 import type { MetadataRoute } from "next";
 
-export default function manifest(): MetadataRoute.Manifest {
+import { getBrandSettings } from "@/lib/brand-server";
+
+export const dynamic = "force-dynamic";
+
+function shortName(businessName: string): string {
+  const words = businessName.trim().split(/\s+/).filter(Boolean);
+  return words.slice(0, 2).join(" ") || businessName;
+}
+
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const brand = await getBrandSettings();
+
   return {
-    name: "Al Haq Farms & Meats",
-    short_name: "Al Haq Farms",
-    description: "Pure. Fresh. Perfected. Shop farm-fresh products from Al Haq Farms & Meats.",
+    name: brand.businessName,
+    short_name: shortName(brand.businessName),
+    description: `${brand.tagline} Shop farm-fresh products from ${brand.businessName}.`,
     start_url: "/",
     display: "standalone",
     background_color: "#faf7f3",
-    theme_color: "#a20d19",
+    theme_color: brand.brandColor,
     icons: [
       {
-        src: "/assets/brand/alhaq-farms-icon-192.png",
+        src: "/api/brand/icon?size=192",
         sizes: "192x192",
-        type: "image/png",
+        type: "image/svg+xml",
         purpose: "any",
       },
       {
-        src: "/assets/brand/alhaq-farms-icon.png",
+        src: "/api/brand/icon?size=512",
         sizes: "512x512",
-        type: "image/png",
+        type: "image/svg+xml",
         purpose: "any",
       },
     ],

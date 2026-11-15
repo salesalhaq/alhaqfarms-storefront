@@ -4,13 +4,17 @@ import { getCatalogSnapshot } from "@/lib/catalog";
 import { getServerEnvironment } from "@/lib/server-supabase";
 import { CatalogPreviewNotice } from "@/components/ui/CatalogPreviewNotice";
 import { CheckoutClient } from "@/components/checkout/CheckoutClient";
+import { getBrandSettings } from "@/lib/brand-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Checkout",
-  description: "Choose delivery or pickup and place your Al-Haq Farms order.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrandSettings();
+  return {
+    title: "Checkout",
+    description: `Choose delivery or pickup and place your ${brand.businessName} order.`,
+  };
+}
 
 interface PaymentAccountRow {
   payment_method: "easypaisa" | "jazzcash";

@@ -5,15 +5,16 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { buttonStyles } from "@/components/ui/GlassButton";
 import { content } from "@/content/site";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
+import { whatsappLink } from "@/lib/brand";
+import { getBrandSettings } from "@/lib/brand-server";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: content.contact.subtext,
 };
 
-export default function ContactPage() {
-  const brand = BRAND_SETTINGS;
+export default async function ContactPage() {
+  const brand = await getBrandSettings();
   const phone = brand.phone || content.contact.phone;
   const email = brand.email || content.contact.email;
   const address = brand.address || content.contact.address;

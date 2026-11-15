@@ -6,9 +6,11 @@ import { useState, type FormEvent } from "react";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ACCOUNT_FIELD, ACCOUNT_LABEL } from "@/components/account/account-styles";
+import { useBrand } from "@/components/BrandProvider";
 import { getSupabaseAuthClient } from "@/lib/supabase-auth";
 
 export function SignUpForm() {
+  const brand = useBrand();
   const router = useRouter();
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -81,7 +83,7 @@ export function SignUpForm() {
 
   return (
     <GlassCard as="section" padding="lg" className="mx-auto w-full max-w-lg">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent2">Join Al-Haq Farms</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent2">Join {brand.businessName}</p>
       <h1 className="mt-2 text-3xl font-semibold text-ink">Create your account</h1>
       <p className="mt-2 text-sm text-muted">Save your contact and delivery details for easier account management.</p>
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Download, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { InstallPwaButton } from "@/components/ui/InstallPwaButton";
 import { content, navigation } from "@/content/site";
 import { whatsappLink, type BrandSettings } from "@/lib/brand";
@@ -17,6 +17,7 @@ export async function Footer({ brand }: FooterProps) {
   const email = brand.email || content.contact.email;
   const address = brand.address || content.contact.address;
   const whatsapp = brand.whatsapp || content.contact.whatsapp;
+  const website = (brand.website || "https://www.alhaqfarms.com.pk").replace(/\/+$/, "");
 
   return (
     <footer className="bg-bg-elevated/60 px-4 pb-8 pt-6 backdrop-blur-xl">
@@ -24,12 +25,10 @@ export async function Footer({ brand }: FooterProps) {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_1.1fr_0.95fr] lg:gap-10">
           <div className="lg:col-span-1">
             <Link href="/" aria-label={brand.businessName} className="inline-flex">
-              <Image
-                src="/assets/brand/alhaq-farms-logo.jpg"
-                alt="Al Haq Farms & Meats — Pure, Fresh, Hygiene"
-                width={160}
-                height={164}
-                className="h-28 w-28 rounded-glass-sm bg-white object-contain p-1"
+              <BrandMark
+                brand={brand}
+                size={112}
+                className="rounded-glass-sm bg-white p-1"
               />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">{content.footer.about}</p>
@@ -104,7 +103,7 @@ export async function Footer({ brand }: FooterProps) {
             <ul className="space-y-2.5 text-muted">
               <li className="flex items-center gap-2">
                 <a
-                  href="https://www.alhaqfarms.com.pk/App/AlhaqFM.apk"
+                  href={`${website}/App/AlhaqFM.apk`}
                   className="flex items-center gap-2 transition-colors hover:text-ink"
                   rel="noreferrer"
                 >
@@ -138,13 +137,13 @@ export async function Footer({ brand }: FooterProps) {
         </div>
 
         <div className="mt-8 flex flex-col gap-5 border-t border-line/10 pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>{content.footer.copyright}</p>
+          <p>© {brand.businessName}. All Rights Reserved.</p>
 
           <ul className="flex flex-wrap gap-2">
             {content.footer.social.map((item) => (
               <li key={item.label}>
                 <a
-                  href={item.href}
+                  href={item.label === "WhatsApp" ? whatsappLink(whatsapp) : item.href}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center rounded-full border border-line/15 bg-white/[0.05] px-3 py-1.5 transition-colors hover:border-accent2/40 hover:text-accent2"

@@ -10,7 +10,8 @@ import { GlassCheckbox } from "@/components/ui/GlassInput";
 import { cn } from "@/lib/utils";
 import { content } from "@/content/site";
 import { filterAndSort } from "@/lib/catalog";
-import { BRAND_SETTINGS, whatsappLink } from "@/lib/brand";
+import { whatsappLink } from "@/lib/brand";
+import { useBrand } from "@/components/BrandProvider";
 import type { Branch, CatalogFilters, Category, Product, SortKey } from "@/lib/types";
 
 const PAGE_SIZE = 8;
@@ -215,6 +216,7 @@ export function ShopClient({
   initialCategory,
 }: ShopClientProps) {
   const router = useRouter();
+  const brand = useBrand();
   const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState(initialCategory);
   const [onSaleOnly, setOnSaleOnly] = useState(false);
@@ -381,7 +383,7 @@ export function ShopClient({
           )}
 
           <a
-            href={whatsappLink(BRAND_SETTINGS.whatsapp, "Hi, I am looking for a specific cut.")}
+            href={whatsappLink(brand.whatsapp, "Hi, I am looking for a specific cut.")}
             target="_blank"
             rel="noreferrer"
             className="glass mt-10 flex items-center gap-3 rounded-glass p-4 transition-all hover:-translate-y-1 hover:shadow-[0_0_32px_rgb(37_211_102/0.25)]"
