@@ -37,6 +37,14 @@ export default async function ShopPage({
   return (
     <main className="px-4 pb-20 pt-4">
       {catalog.isSample && <CatalogPreviewNotice />}
+      {/* Coming soon banner */}
+      <div className="mx-auto mb-6 max-w-6xl">
+        <div className="rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 px-4 py-3">
+          <p className="text-center text-sm font-bold uppercase tracking-wider text-amber-500">
+            Coming soon ..........
+          </p>
+        </div>
+      </div>
       <section className="hero-stage relative mx-auto mb-10 w-full max-w-6xl overflow-hidden rounded-glass-lg">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           {shopImage ? (

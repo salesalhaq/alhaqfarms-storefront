@@ -162,6 +162,11 @@ export default async function HomePage() {
           </div>
 
           <div className="hero-glass w-full max-w-sm justify-self-center rounded-glass p-4 sm:p-5 lg:justify-self-end">
+            <div className="mb-3 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 px-3 py-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-500">
+                Coming soon ..........
+              </p>
+            </div>
             <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
               Today&rsquo;s pick
             </p>
