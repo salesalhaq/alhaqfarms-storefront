@@ -163,6 +163,9 @@ export default async function HomePage() {
 
           <div className="hero-glass w-full max-w-sm justify-self-center rounded-glass p-4 sm:p-5 lg:justify-self-end">
             <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
+              Coming soon ..........
+            </p>
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
               Today&rsquo;s pick
             </p>
             <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-glass-sm border border-line/15 bg-gradient-to-br from-accent/15 via-transparent to-accent2/10">
