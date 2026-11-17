@@ -24,6 +24,7 @@ After those migrations, apply the tracked follow-on migrations in this order:
 3. **202611010003_hq_synced_checkout_settings.sql** - Migrates checkout settings to the desktop app's synced public tables
 4. **202611070001_customer_order_history_rpc.sql** - Secure server-only order history access without exposing order tables
 5. **202611170001_payment_proof_resubmission.sql** - Exposes the payment rejection reason on tracking and lets customers upload a corrected receipt (server-only RPC, per-IP and per-order limits)
+6. **202611170002_resubmit_order_lookup.sql** - Server-only order-state lookup used by the resubmit route before it uploads the corrected receipt
 
 ## Checkout prerequisites
 
@@ -37,7 +38,7 @@ After those migrations, apply the tracked follow-on migrations in this order:
 - The private `web-order-payment-proofs` Storage bucket must exist and remain private. The desktop app reads proofs from this bucket.
 - The server limits order attempts to five per phone hash and twenty per IP hash per hour, and quote requests to 120 per IP hash per hour. Only HMAC hashes are stored.
 - Order tracking is served through a server-only RPC and limited to 30 requests per IP hash per hour. Its response excludes customer name, phone, delivery address, payment reference, and internal event notes.
-- A rejected wallet payment can be corrected from the tracking page: the customer uploads a new transaction ID and receipt, which resets the order to awaiting review. Receipt resubmissions are limited to 10 per IP hash per hour and 5 per order, and the rejection reason is included in the tracking response.
+- A rejected wallet payment can be corrected from the tracking page: the customer uploads a new transaction ID and receipt, which resets the order to awaiting review. Receipt resubmissions are limited to 10 per IP hash per hour and 5 per order, and the rejection reason is included in the tracking response. The route reads the order state through `storefront.storefront_resubmit_order_state` rather than `public.web_orders`; the storefront's server key only needs `EXECUTE` on the `storefront` schema, never table privileges in `public`.
 - Configure at least one branch's delivery settings, eligible COD settings, and/or an enabled payment account. Options without active settings are not offered.
 - Checkout settings are managed from the AlhaqFM app's HQ-only **Settings → Storefront checkout** tab and sync through its normal offline outbox. The `storefront` schema exposes safe checkout views and RPCs; the old settings tables are retained as read-only compatibility mirrors.
 - Configure Cloudflare Turnstile and server-only secrets in the storefront environment. Never put the Supabase service-role key or checkout hash secret in a browser variable.

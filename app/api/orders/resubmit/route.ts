@@ -128,37 +128,65 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data: order, error: orderError } = await client
-    .from("web_orders")
-    .select("branch_id,status,payment_method,payment_status,payment_review_status")
-    .eq("order_number", orderNumber)
-    .eq("customer_phone", phone)
-    .is("deleted_at", null)
-    .maybeSingle();
-  if (orderError) {
-    console.error("[orders/resubmit] order lookup failed", {
-      code: orderError.code,
-      message: orderError.message,
+  // The order is read through a SECURITY DEFINER RPC instead of the table: the
+  // server key only has EXECUTE on the storefront schema, not SELECT on public.
+  const { data: state, error: stateError } = await client
+    .schema("storefront")
+    .rpc("storefront_resubmit_order_state", {
+      p_order_number: orderNumber,
+      p_customer_phone: phone,
     });
+  if (stateError) {
+    console.error("[orders/resubmit] order lookup failed", {
+      code: stateError.code,
+      message: stateError.message,
+    });
+    if (stateError.code === "PGRST202") {
+      return NextResponse.json(
+        { error: "Receipt uploads are not enabled on the server yet. Please contact the branch on WhatsApp." },
+        { status: 503 }
+      );
+    }
+    const reference = stateError.code ? ` (ref ${stateError.code})` : "";
+    return NextResponse.json(
+      { error: `We could not check this order right now. Please try again.${reference}` },
+      { status: 503 }
+    );
+  }
+
+  const lookupError =
+    typeof state === "object" && state !== null && "error" in state && typeof state.error === "string"
+      ? (state.error as string)
+      : null;
+  if (lookupError === "not_found") {
+    return NextResponse.json({ error: "We could not find that order with this phone number." }, { status: 404 });
+  }
+  if (lookupError || !state || typeof state !== "object") {
+    console.error("[orders/resubmit] order lookup returned no state", { state });
     return NextResponse.json(
       { error: "We could not check this order right now. Please try again." },
       { status: 503 }
     );
   }
-  if (!order) {
-    return NextResponse.json({ error: "We could not find that order with this phone number." }, { status: 404 });
-  }
-  if (!WALLET_METHODS.includes(order.payment_method)) {
+
+  const order = state as {
+    branchId: string;
+    status: string;
+    paymentMethod: string;
+    paymentStatus: string;
+    paymentReviewStatus: string;
+  };
+  if (!WALLET_METHODS.includes(order.paymentMethod)) {
     return NextResponse.json({ error: "This order does not need a transfer receipt." }, { status: 422 });
   }
-  if (["cancelled", "delivered"].includes(order.status) || order.payment_status === "paid") {
+  if (["cancelled", "delivered"].includes(order.status) || order.paymentStatus === "paid") {
     return NextResponse.json({ error: "This order is closed. Contact the branch for help." }, { status: 409 });
   }
-  if (order.payment_review_status !== "rejected") {
+  if (order.paymentReviewStatus !== "rejected") {
     return NextResponse.json({ error: "This payment is not waiting for a new receipt." }, { status: 409 });
   }
 
-  const proofPath = `${order.branch_id}/${orderNumber}/receipt-${crypto.randomUUID()}.jpg`;
+  const proofPath = `${order.branchId}/${orderNumber}/receipt-${crypto.randomUUID()}.jpg`;
   const { error: uploadError } = await client.storage
     .from("web-order-payment-proofs")
     .upload(proofPath, receipt, { contentType: "image/jpeg", cacheControl: "0", upsert: false });
