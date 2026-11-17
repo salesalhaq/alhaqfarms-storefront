@@ -97,37 +97,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Receipt resubmission is not configured yet." }, { status: 503 });
   }
 
-  const ipAddress =
-    request.headers.get("cf-connecting-ip") ??
-    request.headers.get("x-real-ip") ??
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
-  const ipHash = await hmacHex(env.CHECKOUT_HASH_SECRET, `resubmit-ip:${ipAddress}`);
-  const { error: limitError } = await client
-    .schema("storefront")
-    .rpc("consume_storefront_resubmit_attempt", { p_ip_hash: ipHash });
-  if (limitError) {
-    console.error("[orders/resubmit] rate-limit RPC failed", {
-      code: limitError.code,
-      message: limitError.message,
-    });
-    const limited = limitError.message.toLowerCase().includes("too many receipt");
-    if (limited) {
-      return NextResponse.json(
-        { error: "Too many receipt uploads. Please wait before trying again." },
-        { status: 429 }
-      );
-    }
-    return NextResponse.json(
-      {
-        error: limitError.code === "PGRST202"
-          ? "Receipt uploads are not enabled on the server yet. Please contact the branch on WhatsApp."
-          : "Receipt upload is temporarily unavailable. Please try again in a few minutes.",
-      },
-      { status: 503 }
-    );
-  }
-
   // The order is read through a SECURITY DEFINER RPC instead of the table: the
   // server key only has EXECUTE on the storefront schema, not SELECT on public.
   const { data: state, error: stateError } = await client
@@ -184,6 +153,39 @@ export async function POST(request: Request) {
   }
   if (order.paymentReviewStatus !== "rejected") {
     return NextResponse.json({ error: "This payment is not waiting for a new receipt." }, { status: 409 });
+  }
+
+  // Only attempts that pass the order checks use the per-IP budget, so a wrong
+  // phone number or a server error does not lock the customer out for an hour.
+  const ipAddress =
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-real-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+  const ipHash = await hmacHex(env.CHECKOUT_HASH_SECRET, `resubmit-ip:${ipAddress}`);
+  const { error: limitError } = await client
+    .schema("storefront")
+    .rpc("consume_storefront_resubmit_attempt", { p_ip_hash: ipHash });
+  if (limitError) {
+    console.error("[orders/resubmit] rate-limit RPC failed", {
+      code: limitError.code,
+      message: limitError.message,
+    });
+    const limited = limitError.message.toLowerCase().includes("too many receipt");
+    if (limited) {
+      return NextResponse.json(
+        { error: "Too many receipt uploads. Please wait before trying again." },
+        { status: 429 }
+      );
+    }
+    return NextResponse.json(
+      {
+        error: limitError.code === "PGRST202"
+          ? "Receipt uploads are not enabled on the server yet. Please contact the branch on WhatsApp."
+          : "Receipt upload is temporarily unavailable. Please try again in a few minutes.",
+      },
+      { status: 503 }
+    );
   }
 
   const proofPath = `${order.branchId}/${orderNumber}/receipt-${crypto.randomUUID()}.jpg`;
