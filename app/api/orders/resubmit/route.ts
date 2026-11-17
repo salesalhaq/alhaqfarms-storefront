@@ -107,14 +107,24 @@ export async function POST(request: Request) {
     .schema("storefront")
     .rpc("consume_storefront_resubmit_attempt", { p_ip_hash: ipHash });
   if (limitError) {
+    console.error("[orders/resubmit] rate-limit RPC failed", {
+      code: limitError.code,
+      message: limitError.message,
+    });
     const limited = limitError.message.toLowerCase().includes("too many receipt");
+    if (limited) {
+      return NextResponse.json(
+        { error: "Too many receipt uploads. Please wait before trying again." },
+        { status: 429 }
+      );
+    }
     return NextResponse.json(
       {
-        error: limited
-          ? "Too many receipt uploads. Please wait before trying again."
-          : "Receipt resubmission is unavailable. Please try again later.",
+        error: limitError.code === "PGRST202"
+          ? "Receipt uploads are not enabled on the server yet. Please contact the branch on WhatsApp."
+          : "Receipt upload is temporarily unavailable. Please try again in a few minutes.",
       },
-      { status: limited ? 429 : 503 }
+      { status: 503 }
     );
   }
 
@@ -126,7 +136,14 @@ export async function POST(request: Request) {
     .is("deleted_at", null)
     .maybeSingle();
   if (orderError) {
-    return NextResponse.json({ error: "Receipt resubmission is unavailable. Please try again later." }, { status: 503 });
+    console.error("[orders/resubmit] order lookup failed", {
+      code: orderError.code,
+      message: orderError.message,
+    });
+    return NextResponse.json(
+      { error: "We could not check this order right now. Please try again." },
+      { status: 503 }
+    );
   }
   if (!order) {
     return NextResponse.json({ error: "We could not find that order with this phone number." }, { status: 404 });
@@ -146,6 +163,9 @@ export async function POST(request: Request) {
     .from("web-order-payment-proofs")
     .upload(proofPath, receipt, { contentType: "image/jpeg", cacheControl: "0", upsert: false });
   if (uploadError) {
+    console.error("[orders/resubmit] receipt upload failed", {
+      message: uploadError.message,
+    });
     return NextResponse.json({ error: "The receipt could not be securely uploaded. Please retry." }, { status: 502 });
   }
 
@@ -159,12 +179,19 @@ export async function POST(request: Request) {
     });
 
   const failure = rpcError
-    ? { message: "The receipt could not be saved. Please try again.", status: 503 }
+    ? (() => {
+        console.error("[orders/resubmit] resubmit RPC failed", {
+          code: rpcError.code,
+          message: rpcError.message,
+        });
+        return { message: "The receipt could not be saved. Please try again.", status: 503 };
+      })()
     : (() => {
         const code =
           typeof data === "object" && data !== null && "error" in data && typeof data.error === "string"
             ? data.error
             : null;
+        if (code) console.error("[orders/resubmit] resubmit rejected", { code });
         return code ? publicResubmitError(code) : null;
       })();
 
