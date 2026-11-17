@@ -164,16 +164,16 @@ export function TrackForm({ initialOrderNumber = "" }: { initialOrderNumber?: st
           {rejected ? (
             <div
               role="alert"
-              className="mt-5 rounded-glass-sm border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200"
+              className="mt-5 rounded-glass-sm border border-red-500/40 bg-red-500/10 p-4 text-sm text-ink"
             >
               <p className="flex items-center gap-2 font-semibold">
-                <AlertCircle size={16} aria-hidden="true" />
+                <AlertCircle size={16} aria-hidden="true" className="shrink-0 text-red-500" />
                 Your payment receipt was rejected
               </p>
               {order.paymentRejectionReason ? (
                 <p className="mt-2">Reason: {order.paymentRejectionReason}</p>
               ) : null}
-              <p className="mt-2 text-red-200/80">
+              <p className="mt-2 text-ink/70">
                 Upload a corrected receipt below, or contact the branch if you need help.
               </p>
               {lookup ? (
@@ -190,7 +190,7 @@ export function TrackForm({ initialOrderNumber = "" }: { initialOrderNumber?: st
           ) : null}
 
           {resubmitted && !rejected ? (
-            <p className="mt-5 rounded-glass-sm border border-success/30 bg-success/10 p-4 text-sm text-success">
+            <p className="mt-5 rounded-glass-sm border border-success/40 bg-success/10 p-4 text-sm text-ink">
               Your new receipt was sent. Staff will review the payment again before the order moves forward.
             </p>
           ) : null}

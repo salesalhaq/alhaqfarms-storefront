@@ -118,7 +118,7 @@ export function PaymentResubmitForm({ orderNumber, phone, onSubmitted }: Payment
       </div>
 
       {error ? (
-        <p role="alert" className="rounded-glass-sm border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
+        <p role="alert" className="rounded-glass-sm border border-red-500/40 bg-red-500/10 p-3 text-sm text-ink">
           {error}
         </p>
       ) : null}
