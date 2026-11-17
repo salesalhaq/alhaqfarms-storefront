@@ -14,6 +14,8 @@ export const trackOrderResultSchema = z.object({
   status: z.string(),
   fulfillmentType: z.string(),
   paymentStatus: z.string(),
+  paymentReviewStatus: z.string().nullable().optional(),
+  paymentRejectionReason: z.string().nullable().optional(),
   totalPaisa: z.number().int().nonnegative(),
   createdAt: z.string(),
   branchName: z.string().nullable(),
